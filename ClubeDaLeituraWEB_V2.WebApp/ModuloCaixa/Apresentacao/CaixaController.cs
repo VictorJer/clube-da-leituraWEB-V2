@@ -56,4 +56,30 @@ public class CaixaController : Controller
 
         return RedirectToAction(nameof(Listar));
     }
+
+    [HttpGet]
+    public ActionResult Editar(string id)
+    {
+        Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(id);
+
+        if (caixaSelecionada == null)
+            return RedirectToAction(nameof(Listar));
+
+        EditarCaixaViewModel viewModel = new EditarCaixaViewModel(
+            caixaSelecionada.Id,
+            caixaSelecionada.Etiqueta,
+            caixaSelecionada.Cor,
+            caixaSelecionada.DiasDeEmprestimo
+        );
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public ActionResult Editar(EditarCaixaViewModel vm)
+    {
+
+
+        return RedirectToAction(nameof(Listar));
+    }
 }
