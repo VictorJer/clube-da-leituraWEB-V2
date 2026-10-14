@@ -1,6 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorOptions(options =>
+{
+    options.ViewLocationFormats.Clear();
+
+    options.ViewLocationFormats.Add("/Modulo{1}/Apresentacao/Views/{0}.cshtml");
+
+    options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
+});
 
 var app = builder.Build();
 
