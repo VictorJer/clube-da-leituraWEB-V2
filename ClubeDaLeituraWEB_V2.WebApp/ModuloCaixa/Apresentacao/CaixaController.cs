@@ -78,7 +78,45 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Editar(EditarCaixaViewModel vm)
     {
+        if (!ModelState.IsValid)
+            return View(vm);
 
+        Caixa caixaAtualizada = new Caixa(
+            vm.Etiqueta,
+            vm.Cor,
+            vm.DiasDeEmprestimo
+        );
+
+        repositorioCaixa.Editar(vm.Id, caixaAtualizada);
+
+        return RedirectToAction(nameof(Listar));
+    }
+
+    [HttpGet]
+    public ActionResult Excluir(string id)
+    {
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+
+        if (caixa == null)
+            return RedirectToAction(nameof(Listar));
+
+        ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
+            id,
+            caixa.Etiqueta,
+            caixa.Cor,
+            caixa.DiasDeEmprestimo
+        );
+
+        return View(excluirVm);
+    }
+
+    [HttpPost]
+    public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
+    {
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
+
+        if (caixa != null)
+            repositorioCaixa.Excluir(caixa);
 
         return RedirectToAction(nameof(Listar));
     }
