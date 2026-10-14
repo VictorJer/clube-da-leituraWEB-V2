@@ -59,7 +59,7 @@
                                     //==============================================================================
                                     <div class="row g-3 g-lg-4">
                                         <div class="col-sm-6 col-lg-3">
-                                            <a asp-controller="Caixa" asp-action="Listar">
+                                            <a asp-controller="Caixa" asp-action="Listar" class="text-decoration-none text-reset">
                                                 <article class="module-card">
                                                     <span class="module-icon mb-3"><i class="bi bi-box-seam" aria-hidden="true"></i></span>
                                                     <h3>Caixas</h3>
@@ -69,25 +69,31 @@
 
                                         </div>
                                         <div class="col-sm-6 col-lg-3">
-                                            <article class="module-card">
-                                                <span class="module-icon mb-3"><i class="bi bi-journal-richtext" aria-hidden="true"></i></span>
-                                                <h3>Revistas</h3>
-                                                <p>Tenha os títulos, edições e disponibilidade do acervo sempre organizados.</p>
-                                            </article>
+                                            <a asp-controller="Revista" asp-action="Listar" class="text-decoration-none text-reset">
+                                                <article class="module-card">
+                                                    <span class="module-icon mb-3"><i class="bi bi-journal-richtext" aria-hidden="true"></i></span>
+                                                    <h3>Revistas</h3>
+                                                    <p>Tenha os títulos, edições e disponibilidade do acervo sempre organizados.</p>
+                                                </article>
+                                            </a>
                                         </div>
                                         <div class="col-sm-6 col-lg-3">
-                                            <article class="module-card">
-                                                <span class="module-icon mb-3"><i class="bi bi-people" aria-hidden="true"></i></span>
-                                                <h3>Amigos</h3>
-                                                <p>Guarde as informações de quem faz parte dessa rede de leitores.</p>
-                                            </article>
+                                            <a asp-controller="Amigo" asp-action="Listar" class="text-decoration-none text-reset">
+                                                <article class="module-card">
+                                                    <span class="module-icon mb-3"><i class="bi bi-people" aria-hidden="true"></i></span>
+                                                    <h3>Amigos</h3>
+                                                    <p>Guarde as informações de quem faz parte dessa rede de leitores.</p>
+                                                </article>
+                                            </a>
                                         </div>
                                         <div class="col-sm-6 col-lg-3">
-                                            <article class="module-card">
-                                                <span class="module-icon mb-3"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></span>
-                                                <h3>Empréstimos</h3>
-                                                <p>Acompanhe as retiradas e devoluções para nenhuma aventura se perder.</p>
-                                            </article>
+                                            <a asp-controller="Emprestimo" asp-action="Listar" class="text-decoration-none text-reset">
+                                                <article class="module-card">
+                                                    <span class="module-icon mb-3"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></span>
+                                                    <h3>Empréstimos</h3>
+                                                    <p>Acompanhe as retiradas e devoluções para nenhuma aventura se perder.</p>
+                                                </article>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
