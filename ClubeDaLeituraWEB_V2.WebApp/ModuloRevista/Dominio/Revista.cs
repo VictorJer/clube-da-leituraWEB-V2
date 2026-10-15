@@ -16,7 +16,7 @@ public class Revista : EntidadeBase<Revista>
     public Revista(string titulo, int numeroEdicao, DateTime anoPublicacao, Caixa caixa,
         StatusRevista status = StatusRevista.Disponivel)
     {
-        Titulo = (titulo ?? string.Empty).Trim();
+        Titulo = (titulo ?? string.Empty).Trim(); // Essa linha faz a garantia de segurança contra valores nulos e remoção de espaços desnecessários da propriedade Titulo.
         NumeroEdicao = numeroEdicao;
         AnoPublicacao = anoPublicacao.Date;
         Caixa = caixa;
