@@ -10,10 +10,12 @@
 }
 
 <main id="conteudo" class="container py-5">
-    <div class="form-page-header mb-4">
-        <p class="eyebrow mb-2">Organização do acervo</p>
-        <h1 class="page-title mb-2">Editar caixa</h1>
-        <p class="text-secondary mb-0">Atualize a etiqueta, a cor ou o prazo de empréstimo.</p>
+    <div class="d-flex justify-content-center">
+        <div class="form-page-header mb-4">
+            <p class="eyebrow mb-2">Organização do acervo</p>
+            <h1 class="page-title mb-2">Editar caixa</h1>
+            <p class="text-secondary mb-0">Atualize a etiqueta, a cor ou o prazo de empréstimo.</p>
+        </div>
     </div>
 
     <section class="form-card" aria-label="Editar dados da caixa">
@@ -23,11 +25,8 @@
 
             <div class="mb-4">
                 <label asp-for="Etiqueta" class="form-label fw-semibold">Etiqueta</label>
-                <input asp-for="Etiqueta"
-                       class="form-control form-control-lg"
-                       placeholder="Ex.: Aventura e fantasia"
-                       autocomplete="off"
-                       autofocus />
+                <input asp-for="Etiqueta" class="form-control form-control-lg" placeholder="Ex.: Aventura e fantasia"
+                       autocomplete="off" autofocus />
                 <span asp-validation-for="Etiqueta" class="field-validation-error"></span>
                 <div class="form-text">Use um nome fácil de reconhecer, com até 50 caracteres.</div>
             </div>
@@ -35,9 +34,7 @@
             <div class="mb-4">
                 <label asp-for="Cor" class="form-label fw-semibold">Cor da caixa</label>
                 <div class="d-flex align-items-center gap-3">
-                    <input asp-for="Cor"
-                           type="color"
-                           class="form-control form-control-color color-picker"
+                    <input asp-for="Cor" type="color" class="form-control form-control-color color-picker"
                            title="Escolha a cor da caixa" />
                     <span class="form-text mt-0">Escolha uma cor para identificar esta caixa.</span>
                 </div>
@@ -47,11 +44,7 @@
             <div class="mb-4">
                 <label asp-for="DiasDeEmprestimo" class="form-label fw-semibold">Dias de empréstimo</label>
                 <div class="input-group input-group-lg prazo-input">
-                    <input asp-for="DiasDeEmprestimo"
-                           type="number"
-                           class="form-control"
-                           min="1"
-                           step="1"
+                    <input asp-for="DiasDeEmprestimo" type="number" class="form-control" min="1" step="1"
                            inputmode="numeric" />
                     <span class="input-group-text">dias</span>
                 </div>
