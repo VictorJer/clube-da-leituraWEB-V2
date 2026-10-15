@@ -1,20 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
-
-public enum StatusRevista
-{
-    [Display(Name = "Disponível")]
-    Disponivel,
-
-    [Display(Name = "Emprestada")]
-    Emprestada,
-
-    [Display(Name = "Reservada")]
-    Reservada
-}
 
 public class Revista : EntidadeBase<Revista>
 {
