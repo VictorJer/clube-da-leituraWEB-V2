@@ -7,6 +7,6 @@ public class HomeController : Controller
     [HttpGet]
     public ActionResult Home()
     {
-        return View("~/ModuloHome/Apresentacao/Views/Home.cshtml");
+        return View("~/Compartilhado/Apresentacao/Views/Home.cshtml");
     }
 }
