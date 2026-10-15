@@ -96,3 +96,48 @@
     height: 1rem;
     width: 1rem;
 }
+
+.form-page-header {
+    max-width: 680px;
+}
+
+.form-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    margin: 0 auto;
+    max-width: 720px;
+    padding: clamp(1.25rem, 4vw, 2.25rem);
+}
+
+.form-card .form-label {
+    color: var(--ink);
+}
+
+.form-card .form-control,
+.form-card .input-group-text {
+    border-color: var(--line);
+}
+
+.form-card .form-control:focus {
+    border-color: #bd9094;
+    box-shadow: 0 0 0 .25rem rgba(118, 60, 69, .12);
+}
+
+.form-card .form-control-color {
+    border-radius: .75rem;
+    height: 3.25rem;
+    padding: .35rem;
+    width: 4rem;
+}
+
+.field-validation-error {
+    color: #b02a37;
+    display: block;
+    font-size: .875rem;
+    margin-top: .35rem;
+}
+
+.prazo-input {
+    max-width: 240px;
+}

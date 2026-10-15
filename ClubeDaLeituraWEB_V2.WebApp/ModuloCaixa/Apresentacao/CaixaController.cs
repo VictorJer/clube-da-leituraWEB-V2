@@ -37,7 +37,13 @@ public class CaixaController : Controller
     [HttpGet]
     public ActionResult Cadastrar()
     {
-        return View();
+        CadastrarCaixaViewModel viewModel = new CadastrarCaixaViewModel(
+            string.Empty,
+            "#763c45",
+            7
+        );
+
+        return View(viewModel);
     }
 
     [HttpPost]
