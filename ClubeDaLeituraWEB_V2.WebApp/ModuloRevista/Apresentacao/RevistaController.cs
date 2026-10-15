@@ -54,9 +54,6 @@ public class RevistaController : Controller
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
-        if (ExisteTituloEdicao(viewModel.Titulo, viewModel.NumeroEdicao))
-            ModelState.AddModelError(nameof(viewModel.NumeroEdicao), "Já existe uma revista com este título e número de edição.");
-
         if (caixa != null)
         {
             Revista revista = new(
@@ -111,9 +108,6 @@ public class RevistaController : Controller
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
-        if (ExisteTituloEdicao(viewModel.Titulo, viewModel.NumeroEdicao, viewModel.Id))
-            ModelState.AddModelError(nameof(viewModel.NumeroEdicao), "Já existe uma revista com este título e número de edição.");
-
         if (caixa != null)
         {
             Revista revistaAtualizada = new(
@@ -156,7 +150,6 @@ public class RevistaController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirRevistaViewModel viewModel)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(viewModel.Id);
@@ -164,19 +157,6 @@ public class RevistaController : Controller
             repositorioRevista.Excluir(revista);
 
         return RedirectToAction(nameof(Listar));
-    }
-
-    private bool ExisteTituloEdicao(string titulo, int numeroEdicao, string? idIgnorado = null)
-    {
-        if (string.IsNullOrWhiteSpace(titulo))
-            return false;
-
-        string tituloNormalizado = titulo.Trim();
-        return repositorioRevista.Filtrar(revista =>
-            revista.Id != idIgnorado &&
-            revista.NumeroEdicao == numeroEdicao &&
-            string.Equals(revista.Titulo.Trim(), tituloNormalizado, StringComparison.OrdinalIgnoreCase))
-            .Count > 0;
     }
 
     private void AdicionarErrosDeDominio(Revista revista)
