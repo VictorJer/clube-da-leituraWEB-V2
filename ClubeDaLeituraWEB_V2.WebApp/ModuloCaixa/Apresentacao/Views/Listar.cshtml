@@ -1,0 +1,75 @@
+@model List<ListarCaixasViewModel>
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Caixas";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <header class="d-flex flex-column flex-sm-row align-items-sm-end justify-content-between gap-3 mb-4">
+        <div>
+            <p class="eyebrow mb-2">Organização do acervo</p>
+            <h1 class="page-title mb-2">Caixas</h1>
+            <p class="text-secondary mb-0">Consulte as caixas e os prazos de empréstimo definidos para cada uma.</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="count-badge px-4">
+                @Model.Count @(Model.Count == 1 ? "caixa cadastrada" : "caixas cadastradas")
+            </span>
+            <a class="btn btn-outline-success fw-semibold px-4 py-2 rounded-pill d-inline-flex align-items-center gap-2"
+               asp-action="Cadastrar">Cadastrar</a>
+        </div>
+
+    </header>
+
+    @if (Model.Count == 0)
+    {
+        <section class="empty-state text-center" aria-labelledby="empty-title">
+            <span class="empty-icon" aria-hidden="true"><i class="bi bi-box-seam"></i></span>
+            <h2 id="empty-title" class="h4 mt-3">Nenhuma caixa cadastrada</h2>
+            <p class="text-secondary mb-0">As caixas cadastradas serão exibidas aqui.</p>
+        </section>
+    }
+    else
+    {
+        <div class="table-responsive caixa-table-wrap">
+            <table class="table align-middle mb-0">
+                <caption class="visually-hidden">Caixas cadastradas e seus prazos de empréstimo</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Etiqueta</th>
+                        <th scope="col">Cor</th>
+                        <th scope="col">Prazo de empréstimo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ListarCaixasViewModel caixa in Model)
+                    {
+                        string cor = string.IsNullOrWhiteSpace(caixa.Cor) ? "Não informada" : caixa.Cor;
+                        string corDoIndicador = System.Text.RegularExpressions.Regex.IsMatch(
+                            cor,
+                            @"\A#[0-9a-fA-F]{6}\z")
+                            ? cor
+                            : "#763c45";
+
+                        <tr>
+                            <th scope="row" class="etiqueta-cell">@caixa.Etiqueta</th>
+                            <td>
+                                <span class="color-value">
+                                    <span class="color-swatch" style="background-color: @corDoIndicador"
+                                          aria-hidden="true"></span>
+                                    @cor
+                                </span>
+                            </td>
+                            <td>@caixa.DiasDeEmprestimo @(caixa.DiasDeEmprestimo == 1 ? "dia" : "dias")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</main>

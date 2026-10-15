@@ -1,0 +1,98 @@
+.page-title {
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+    letter-spacing: -.055em;
+}
+
+.eyebrow {
+    color: var(--wine);
+    font-size: .77rem;
+    font-weight: 750;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.count-badge {
+    align-self: flex-start;
+    background: #f3ebe7;
+    border: 1px solid #e7d8d2;
+    border-radius: 999px;
+    color: var(--wine);
+    font-size: .88rem;
+    font-weight: 650;
+    padding: .55rem .9rem;
+    white-space: nowrap;
+}
+
+.empty-state,
+.caixa-table-wrap {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+}
+
+.empty-state {
+    padding: 4rem 1.5rem;
+}
+
+.empty-icon {
+    align-items: center;
+    background: #f3ebe7;
+    border-radius: 16px;
+    color: var(--wine);
+    display: inline-flex;
+    font-size: 1.75rem;
+    height: 64px;
+    justify-content: center;
+    width: 64px;
+}
+
+.caixa-table-wrap {
+    overflow: hidden;
+}
+
+.caixa-table-wrap .table {
+    --bs-table-bg: transparent;
+}
+
+.caixa-table-wrap thead th {
+    background: #fbf9f6;
+    border-bottom-color: var(--line);
+    color: var(--muted);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 1rem 1.25rem;
+    text-transform: uppercase;
+}
+
+.caixa-table-wrap tbody td,
+.caixa-table-wrap tbody th {
+    border-bottom-color: var(--line);
+    padding: 1.1rem 1.25rem;
+}
+
+.caixa-table-wrap tbody tr:last-child td,
+.caixa-table-wrap tbody tr:last-child th {
+    border-bottom: 0;
+}
+
+.etiqueta-cell {
+    color: var(--ink);
+    font-weight: 650;
+}
+
+.color-value {
+    align-items: center;
+    display: inline-flex;
+    gap: .55rem;
+}
+
+.color-swatch {
+    border: 1px solid rgba(40, 37, 31, .14);
+    border-radius: 50%;
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+}
