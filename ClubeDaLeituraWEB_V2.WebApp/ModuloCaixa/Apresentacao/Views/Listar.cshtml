@@ -44,6 +44,7 @@
                         <th scope="col">Etiqueta</th>
                         <th scope="col">Cor</th>
                         <th scope="col">Prazo de empréstimo</th>
+                        <th scope="col" class="text-end">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,6 +67,24 @@
                                 </span>
                             </td>
                             <td>@caixa.DiasDeEmprestimo @(caixa.DiasDeEmprestimo == 1 ? "dia" : "dias")</td>
+                            <td>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                       asp-action="Editar"
+                                       asp-route-id="@caixa.Id"
+                                       aria-label="Editar caixa @caixa.Etiqueta">
+                                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                                        <span>Editar</span>
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                       asp-action="Excluir"
+                                       asp-route-id="@caixa.Id"
+                                       aria-label="Excluir caixa @caixa.Etiqueta">
+                                        <i class="bi bi-trash" aria-hidden="true"></i>
+                                        <span>Excluir</span>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
