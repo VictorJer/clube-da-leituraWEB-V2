@@ -4,6 +4,18 @@ using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped(serviceProvider =>
+{
+    ContextoJson contexto = new ContextoJson();
+    contexto.Carregar();
+    return contexto;
+});
+
+
+builder.Services.AddScoped<IRepositorioCaixa, RepositorioCaixaEmArquivo>();
+
+
 builder.Services.AddControllersWithViews().AddRazorOptions(options =>
 {
     options.ViewLocationFormats.Clear();
@@ -13,13 +25,6 @@ builder.Services.AddControllersWithViews().AddRazorOptions(options =>
     options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
 });
 
-builder.Services.AddSingleton(serviceProvider =>
-{
-    ContextoJson contexto = new ContextoJson();
-    contexto.Carregar();
-    return contexto;
-});
-builder.Services.AddSingleton<IRepositorioCaixa, RepositorioCaixaEmArquivo>();
 
 var app = builder.Build();
 
