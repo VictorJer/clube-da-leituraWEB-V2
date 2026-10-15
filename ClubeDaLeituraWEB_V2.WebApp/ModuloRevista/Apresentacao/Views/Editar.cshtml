@@ -1,0 +1,58 @@
+@model EditarRevistaViewModel
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Editar revista";
+    List<SelectListItem> caixas = ViewBag.Caixas;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+    <link rel="stylesheet" href="~/css/revistas.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <div class="form-page-header mb-4">
+        <p class="eyebrow mb-2">Organização do acervo</p>
+        <h1 class="page-title mb-2">Editar revista</h1>
+        <p class="text-secondary mb-0">Atualize os dados e a disponibilidade da edição.</p>
+    </div>
+
+    <section class="form-card" aria-label="Editar dados da revista">
+        <form asp-action="Editar" method="post">
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="mb-4">
+                <label asp-for="Titulo" class="form-label fw-semibold">Título</label>
+                <input asp-for="Titulo" class="form-control form-control-lg" maxlength="100" autocomplete="off" />
+                <span asp-validation-for="Titulo" class="field-validation-error"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="NumeroEdicao" class="form-label fw-semibold">Número da edição</label>
+                <input asp-for="NumeroEdicao" type="number" class="form-control" min="1" step="1" />
+                <span asp-validation-for="NumeroEdicao" class="field-validation-error"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="AnoPublicacao" class="form-label fw-semibold">Data de publicação</label>
+                <input asp-for="AnoPublicacao" type="date" class="form-control" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="AnoPublicacao" class="field-validation-error"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="CaixaId" class="form-label fw-semibold">Caixa</label>
+                <select asp-for="CaixaId" asp-items="caixas" class="form-select">
+                    <option value="">Selecione uma caixa</option>
+                </select>
+                <span asp-validation-for="CaixaId" class="field-validation-error"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Status" class="form-label fw-semibold">Status</label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusRevista>()" class="form-select"></select>
+                <span asp-validation-for="Status" class="field-validation-error"></span>
+            </div>
+            <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 pt-3 border-top">
+                <a asp-action="Listar" class="btn btn-light rounded-pill px-4 py-2">Cancelar</a>
+                <button type="submit" class="btn btn-outline-primary fw-semibold rounded-pill px-4 py-2">Salvar alterações</button>
+            </div>
+        </form>
+    </section>
+</main>

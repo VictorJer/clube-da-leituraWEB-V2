@@ -1,0 +1,23 @@
+.status-badge {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: .82rem;
+    font-weight: 650;
+    padding: .35rem .7rem;
+    white-space: nowrap;
+}
+
+.status-disponivel {
+    background: #e8f3ea;
+    color: #28613b;
+}
+
+.status-emprestada {
+    background: #fff1df;
+    color: #815310;
+}
+
+.status-reservada {
+    background: #eee9f7;
+    color: #563f7a;
+}

@@ -1,15 +1,18 @@
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using Microsoft.AspNetCore.Mvc;
 
 public class CaixaController : Controller
 {
     private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly IRepositorioRevista repositorioRevista;
 
-    public CaixaController(IRepositorioCaixa repositorioCaixa)
+    public CaixaController(IRepositorioCaixa repositorioCaixa, IRepositorioRevista repositorioRevista)
     {
         this.repositorioCaixa = repositorioCaixa;
+        this.repositorioRevista = repositorioRevista;
     }
 
     [HttpGet]
@@ -106,6 +109,12 @@ public class CaixaController : Controller
         if (caixa == null)
             return RedirectToAction(nameof(Listar));
 
+        if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == id).Count > 0)
+        {
+            TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
+            return RedirectToAction(nameof(Listar));
+        }
+
         ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
             id,
             caixa.Etiqueta,
@@ -121,8 +130,16 @@ public class CaixaController : Controller
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
 
-        if (caixa != null)
-            repositorioCaixa.Excluir(caixa);
+        if (caixa == null)
+            return RedirectToAction(nameof(Listar));
+
+        if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == excluirVm.Id).Count > 0)
+        {
+            TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
+            return RedirectToAction(nameof(Listar));
+        }
+
+        repositorioCaixa.Excluir(caixa);
 
         return RedirectToAction(nameof(Listar));
     }

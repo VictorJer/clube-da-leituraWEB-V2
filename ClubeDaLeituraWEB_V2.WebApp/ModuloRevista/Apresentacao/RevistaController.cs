@@ -1,0 +1,195 @@
+using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Apresentacao;
+
+public class RevistaController : Controller
+{
+    private readonly IRepositorioRevista repositorioRevista;
+    private readonly IRepositorioCaixa repositorioCaixa;
+
+    public RevistaController(IRepositorioRevista repositorioRevista, IRepositorioCaixa repositorioCaixa)
+    {
+        this.repositorioRevista = repositorioRevista;
+        this.repositorioCaixa = repositorioCaixa;
+    }
+
+    [HttpGet]
+    public ActionResult Listar()
+    {
+        List<ListarRevistasViewModel> revistas = repositorioRevista.SelecionarTodos()
+            .Select(revista => new ListarRevistasViewModel(
+                revista.Id,
+                revista.Titulo,
+                revista.NumeroEdicao,
+                revista.AnoPublicacao,
+                revista.Caixa?.Etiqueta ?? "Caixa não encontrada",
+                revista.Status))
+            .ToList();
+
+        return View(revistas);
+    }
+
+    [HttpGet]
+    public ActionResult Cadastrar()
+    {
+        PrepararCaixas();
+        CadastrarRevistaViewModel viewModel = new(
+            string.Empty,
+            1,
+            DateTime.Today,
+            string.Empty,
+            StatusRevista.Disponivel);
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult Cadastrar(CadastrarRevistaViewModel viewModel)
+    {
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
+        if (caixa == null)
+            ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
+
+        if (ExisteTituloEdicao(viewModel.Titulo, viewModel.NumeroEdicao))
+            ModelState.AddModelError(nameof(viewModel.NumeroEdicao), "Já existe uma revista com este título e número de edição.");
+
+        if (caixa != null)
+        {
+            Revista revista = new(
+                viewModel.Titulo,
+                viewModel.NumeroEdicao,
+                viewModel.AnoPublicacao,
+                caixa,
+                viewModel.Status);
+
+            AdicionarErrosDeDominio(revista);
+            if (ModelState.IsValid)
+                repositorioRevista.Cadastrar(revista);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            PrepararCaixas();
+            return View(viewModel);
+        }
+
+        return RedirectToAction(nameof(Listar));
+    }
+
+    [HttpGet]
+    public ActionResult Editar(string id)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(id);
+        if (revista == null)
+            return RedirectToAction(nameof(Listar));
+
+        PrepararCaixas();
+        EditarRevistaViewModel viewModel = new(
+            revista.Id,
+            revista.Titulo,
+            revista.NumeroEdicao,
+            revista.AnoPublicacao,
+            revista.Caixa?.Id ?? string.Empty,
+            revista.Status);
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult Editar(EditarRevistaViewModel viewModel)
+    {
+        Revista? revistaAtual = repositorioRevista.SelecionarPorId(viewModel.Id);
+        if (revistaAtual == null)
+            return RedirectToAction(nameof(Listar));
+
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
+        if (caixa == null)
+            ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
+
+        if (ExisteTituloEdicao(viewModel.Titulo, viewModel.NumeroEdicao, viewModel.Id))
+            ModelState.AddModelError(nameof(viewModel.NumeroEdicao), "Já existe uma revista com este título e número de edição.");
+
+        if (caixa != null)
+        {
+            Revista revistaAtualizada = new(
+                viewModel.Titulo,
+                viewModel.NumeroEdicao,
+                viewModel.AnoPublicacao,
+                caixa,
+                viewModel.Status);
+
+            AdicionarErrosDeDominio(revistaAtualizada);
+            if (ModelState.IsValid)
+                repositorioRevista.Editar(viewModel.Id, revistaAtualizada);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            PrepararCaixas();
+            return View(viewModel);
+        }
+
+        return RedirectToAction(nameof(Listar));
+    }
+
+    [HttpGet]
+    public ActionResult Excluir(string id)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(id);
+        if (revista == null)
+            return RedirectToAction(nameof(Listar));
+
+        ExcluirRevistaViewModel viewModel = new(
+            revista.Id,
+            revista.Titulo,
+            revista.NumeroEdicao,
+            revista.AnoPublicacao,
+            revista.Caixa?.Etiqueta ?? "Caixa não encontrada",
+            revista.Status);
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult Excluir(ExcluirRevistaViewModel viewModel)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(viewModel.Id);
+        if (revista != null)
+            repositorioRevista.Excluir(revista);
+
+        return RedirectToAction(nameof(Listar));
+    }
+
+    private bool ExisteTituloEdicao(string titulo, int numeroEdicao, string? idIgnorado = null)
+    {
+        if (string.IsNullOrWhiteSpace(titulo))
+            return false;
+
+        string tituloNormalizado = titulo.Trim();
+        return repositorioRevista.Filtrar(revista =>
+            revista.Id != idIgnorado &&
+            revista.NumeroEdicao == numeroEdicao &&
+            string.Equals(revista.Titulo.Trim(), tituloNormalizado, StringComparison.OrdinalIgnoreCase))
+            .Count > 0;
+    }
+
+    private void AdicionarErrosDeDominio(Revista revista)
+    {
+        foreach (string erro in revista.Validar())
+            ModelState.AddModelError(string.Empty, erro);
+    }
+
+    private void PrepararCaixas()
+    {
+        ViewBag.Caixas = repositorioCaixa.SelecionarTodos()
+            .OrderBy(caixa => caixa.Etiqueta)
+            .Select(caixa => new SelectListItem(caixa.Etiqueta, caixa.Id))
+            .ToList();
+    }
+}
