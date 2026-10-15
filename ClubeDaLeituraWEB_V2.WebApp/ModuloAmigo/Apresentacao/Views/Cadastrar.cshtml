@@ -1,0 +1,51 @@
+@model CadastrarAmigoViewModel
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Cadastrar amigo";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+    <link rel="stylesheet" href="~/css/amigos.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <div class="form-page-header mb-4">
+        <p class="eyebrow mb-2">Clube da leitura</p>
+        <h1 class="page-title mb-2">Cadastrar amigo</h1>
+        <p class="text-secondary mb-0">Adicione os dados do leitor e do responsável.</p>
+    </div>
+
+    <section class="form-card" aria-label="Dados do amigo">
+        <form asp-action="Cadastrar" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="mb-4">
+                <label asp-for="Nome" class="form-label fw-semibold">Nome do amigo</label>
+                <input asp-for="Nome" class="form-control form-control-lg" maxlength="100" autocomplete="name" autofocus />
+                <span asp-validation-for="Nome" class="field-validation-error"></span>
+                <div class="form-text">Use entre 3 e 100 caracteres.</div>
+            </div>
+            <div class="mb-4">
+                <label asp-for="NomeResponsavel" class="form-label fw-semibold">Nome do responsável</label>
+                <input asp-for="NomeResponsavel" class="form-control form-control-lg" maxlength="100" />
+                <span asp-validation-for="NomeResponsavel" class="field-validation-error"></span>
+                <div class="form-text">Use entre 3 e 100 caracteres.</div>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Telefone" class="form-label fw-semibold">Telefone</label>
+                <input asp-for="Telefone" type="tel" class="form-control form-control-lg"
+                       placeholder="(11) 98765-4321" autocomplete="tel" />
+                <span asp-validation-for="Telefone" class="field-validation-error"></span>
+                <div class="form-text">Informe um telefone com DDD: 10 ou 11 dígitos.</div>
+            </div>
+            <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 pt-3 border-top">
+                <a asp-action="Listar" class="btn btn-light rounded-pill px-4 py-2">Cancelar</a>
+                <button type="submit" class="btn btn-outline-success fw-semibold rounded-pill px-4 py-2">
+                    <i class="bi bi-check2 me-1" aria-hidden="true"></i>
+                    Cadastrar amigo
+                </button>
+            </div>
+        </form>
+    </section>
+</main>

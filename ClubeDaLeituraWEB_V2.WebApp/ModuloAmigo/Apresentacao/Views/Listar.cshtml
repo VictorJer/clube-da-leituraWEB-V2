@@ -1,0 +1,72 @@
+@model List<ListarAmigosViewModel>
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Amigos";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+    <link rel="stylesheet" href="~/css/amigos.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <header class="d-flex flex-column flex-sm-row align-items-sm-end justify-content-between gap-3 mb-4">
+        <div>
+            <p class="eyebrow mb-2">Clube da leitura</p>
+            <h1 class="page-title mb-2">Amigos</h1>
+            <p class="text-secondary mb-0">Consulte e mantenha os dados de quem participa do clube.</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="count-badge px-4">
+                @Model.Count @(Model.Count == 1 ? "amigo cadastrado" : "amigos cadastrados")
+            </span>
+            <a class="btn btn-outline-success fw-semibold px-4 py-2 rounded-pill" asp-action="Cadastrar">Cadastrar</a>
+        </div>
+    </header>
+
+    @if (Model.Count == 0)
+    {
+        <section class="empty-state text-center" aria-labelledby="empty-title">
+            <span class="empty-icon" aria-hidden="true"><i class="bi bi-people"></i></span>
+            <h2 id="empty-title" class="h4 mt-3">Nenhum amigo cadastrado</h2>
+            <p class="text-secondary mb-0">Os amigos cadastrados serão exibidos aqui.</p>
+        </section>
+    }
+    else
+    {
+        <div class="table-responsive caixa-table-wrap">
+            <table class="table align-middle mb-0">
+                <caption class="visually-hidden">Amigos cadastrados e seus contatos</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Responsável</th>
+                        <th scope="col">Telefone</th>
+                        <th scope="col" class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ListarAmigosViewModel amigo in Model)
+                    {
+                        <tr>
+                            <th scope="row" class="etiqueta-cell">@amigo.Nome</th>
+                            <td>@amigo.NomeResponsavel</td>
+                            <td><a class="phone-link" href="tel:@Amigo.NormalizarTelefone(amigo.Telefone)">@amigo.Telefone</a></td>
+                            <td>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                       asp-action="Editar" asp-route-id="@amigo.Id"
+                                       aria-label="Editar amigo @amigo.Nome">Editar</a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                       asp-action="Excluir" asp-route-id="@amigo.Id"
+                                       aria-label="Excluir amigo @amigo.Nome">Excluir</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</main>

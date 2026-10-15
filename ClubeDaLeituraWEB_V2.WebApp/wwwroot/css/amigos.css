@@ -1,0 +1,9 @@
+.phone-link {
+    color: var(--ink);
+    text-decoration-color: #cdb9b2;
+    text-underline-offset: .2em;
+}
+
+.phone-link:hover {
+    color: var(--wine);
+}

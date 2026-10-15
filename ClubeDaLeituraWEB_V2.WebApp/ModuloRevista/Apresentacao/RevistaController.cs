@@ -47,6 +47,7 @@ public class RevistaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarRevistaViewModel viewModel)
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
@@ -96,6 +97,7 @@ public class RevistaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Editar(EditarRevistaViewModel viewModel)
     {
         Revista? revistaAtual = repositorioRevista.SelecionarPorId(viewModel.Id);
@@ -148,6 +150,7 @@ public class RevistaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirRevistaViewModel viewModel)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(viewModel.Id);

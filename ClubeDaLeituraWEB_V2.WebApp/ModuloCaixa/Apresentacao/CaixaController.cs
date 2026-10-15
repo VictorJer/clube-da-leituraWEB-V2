@@ -50,6 +50,7 @@ public class CaixaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarCaixaViewModel vm)
     {
         if (!ModelState.IsValid)
@@ -85,6 +86,7 @@ public class CaixaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Editar(EditarCaixaViewModel vm)
     {
         if (!ModelState.IsValid)
@@ -126,6 +128,7 @@ public class CaixaController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
