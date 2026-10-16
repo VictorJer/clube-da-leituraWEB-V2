@@ -54,6 +54,9 @@ public class RevistaController : Controller
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
+        if (viewModel.AnoPublicacao > DateTime.Now)
+            ModelState.AddModelError(nameof(viewModel.AnoPublicacao), "");
+
         if (caixa != null)
         {
             Revista revista = new(
