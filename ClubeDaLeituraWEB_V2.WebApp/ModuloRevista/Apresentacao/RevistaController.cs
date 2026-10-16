@@ -111,6 +111,12 @@ public class RevistaController : Controller
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
+        if (!ModelState.IsValid)
+        {
+            PrepararCaixas();
+            return View(viewModel);
+        }
+
         if (caixa != null)
         {
             Revista revistaAtualizada = new(
@@ -123,12 +129,6 @@ public class RevistaController : Controller
             AdicionarErrosDeDominio(revistaAtualizada);
             if (ModelState.IsValid)
                 repositorioRevista.Editar(viewModel.Id, revistaAtualizada);
-        }
-
-        if (!ModelState.IsValid)
-        {
-            PrepararCaixas();
-            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Listar));
