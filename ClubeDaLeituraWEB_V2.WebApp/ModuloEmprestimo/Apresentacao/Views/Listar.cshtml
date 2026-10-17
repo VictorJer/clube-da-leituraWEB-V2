@@ -1,0 +1,95 @@
+@model ListarEmprestimosViewModel
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Empréstimos";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+    <link rel="stylesheet" href="~/css/emprestimos.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <header class="d-flex flex-column flex-sm-row align-items-sm-end justify-content-between gap-3 mb-4">
+        <div>
+            <p class="eyebrow mb-2">Clube da leitura</p>
+            <h1 class="page-title mb-2">@(Model.NomeAmigo is null ? "Empréstimos" : $"Empréstimos de {Model.NomeAmigo}")</h1>
+            <p class="text-secondary mb-0">Acompanhe prazos, devoluções e o histórico das leituras compartilhadas.</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="count-badge px-4">@Model.Emprestimos.Count @(Model.Emprestimos.Count == 1 ? "empréstimo" : "empréstimos")</span>
+            <a class="btn btn-outline-success fw-semibold px-4 py-2 rounded-pill" asp-action="Cadastrar">Registrar empréstimo</a>
+        </div>
+    </header>
+
+    @if (TempData["Aviso"] is string aviso)
+    {
+        <div class="alert alert-warning" role="alert">@aviso</div>
+    }
+
+    @if (Model.NomeAmigo is not null)
+    {
+        <p class="mb-3"><a asp-action="Listar" class="link-secondary">Ver todos os empréstimos</a></p>
+    }
+
+    @if (Model.Emprestimos.Count == 0)
+    {
+        <section class="empty-state text-center" aria-labelledby="empty-title">
+            <span class="empty-icon" aria-hidden="true"><i class="bi bi-arrow-left-right"></i></span>
+            <h2 id="empty-title" class="h4 mt-3">Nenhum empréstimo encontrado</h2>
+            <p class="text-secondary mb-0">Os empréstimos registrados serão exibidos aqui.</p>
+        </section>
+    }
+    else
+    {
+        <div class="table-responsive caixa-table-wrap">
+            <table class="table align-middle mb-0">
+                <caption class="visually-hidden">Empréstimos, prazos, status e devoluções</caption>
+                <thead>
+                    <tr>
+                        @if (Model.NomeAmigo is null)
+                        {
+                            <th scope="col">Amigo</th>
+                        }
+                        <th scope="col">Revista</th>
+                        <th scope="col">Data do empréstimo</th>
+                        <th scope="col">Devolução prevista</th>
+                        <th scope="col">Devolução realizada</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (EmprestimoListarItemViewModel emprestimo in Model.Emprestimos)
+                    {
+                        <tr class="@(emprestimo.Status == StatusEmprestimo.Atrasado ? "emprestimo-atrasado" : null)">
+                            @if (Model.NomeAmigo is null)
+                            {
+                                <td><a asp-action="Listar" asp-route-amigoId="@emprestimo.AmigoId">@emprestimo.Amigo</a></td>
+                            }
+                            <th scope="row" class="etiqueta-cell">@emprestimo.Revista <span class="text-secondary fw-normal">#@emprestimo.NumeroEdicao</span></th>
+                            <td>@emprestimo.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+                            <td>@emprestimo.DataDevolucaoPrevista.ToString("dd/MM/yyyy")</td>
+                            <td>@(emprestimo.DataDevolucao?.ToString("dd/MM/yyyy") ?? "—")</td>
+                            <td><span class="status-badge status-@emprestimo.Status.ToString().ToLowerInvariant()">@Html.DisplayFor(_ => emprestimo.Status)</span></td>
+                            <td>
+                                @if (!emprestimo.DataDevolucao.HasValue)
+                                {
+                                    <form asp-action="RegistrarDevolucao" method="post" class="d-flex justify-content-end">
+                                        <input type="hidden" name="id" value="@emprestimo.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">Registrar devolução</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-secondary d-block text-end">Concluído</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</main>

@@ -1,0 +1,23 @@
+.status-aberto {
+    background: #e8f3ea;
+    color: #28613b;
+}
+
+.status-concluido {
+    background: #eee9f7;
+    color: #563f7a;
+}
+
+.status-atrasado {
+    background: #fbe8e7;
+    color: #9b2c2c;
+}
+
+.emprestimo-atrasado {
+    background: #fff8f7;
+}
+
+.emprestimo-atrasado th,
+.emprestimo-atrasado td {
+    color: #7f2929;
+}

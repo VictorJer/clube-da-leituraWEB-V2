@@ -1,0 +1,62 @@
+@model CadastrarEmprestimoViewModel
+
+@{
+    Layout = "~/Compartilhado/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Registrar empréstimo";
+    List<SelectListItem> amigos = ViewBag.Amigos;
+    List<SelectListItem> revistas = ViewBag.Revistas;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/caixas.css" />
+}
+
+<main id="conteudo" class="container py-5">
+    <div class="form-page-header mb-4">
+        <p class="eyebrow mb-2">Clube da leitura</p>
+        <h1 class="page-title mb-2">Registrar empréstimo</h1>
+        <p class="text-secondary mb-0">O prazo de devolução será calculado automaticamente conforme a caixa da revista.
+        </p>
+    </div>
+
+    @if (amigos.Count == 0 || revistas.Count == 0)
+    {
+        <div class="alert alert-warning" role="alert">
+            @if (amigos.Count == 0)
+            {
+                <span>Cadastre um amigo sem empréstimo em aberto antes de continuar. </span>
+                <a asp-controller="Amigo" asp-action="Cadastrar" class="alert-link">Cadastrar amigo</a>
+            }
+            @if (revistas.Count == 0)
+            {
+                <span>Cadastre ou disponibilize uma revista antes de continuar. </span>
+                <a asp-controller="Revista" asp-action="Cadastrar" class="alert-link">Cadastrar revista</a>
+            }
+        </div>
+    }
+
+    <section class="form-card" aria-label="Dados do empréstimo">
+        <form asp-action="Cadastrar" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="mb-4">
+                <label asp-for="AmigoId" class="form-label fw-semibold">Amigo</label>
+                <select asp-for="AmigoId" asp-items="amigos" class="form-select">
+                    <option value="">Selecione um amigo</option>
+                </select>
+                <span asp-validation-for="AmigoId" class="field-validation-error"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="RevistaId" class="form-label fw-semibold">Revista disponível</label>
+                <select asp-for="RevistaId" asp-items="revistas" class="form-select">
+                    <option value="">Selecione uma revista</option>
+                </select>
+                <span asp-validation-for="RevistaId" class="field-validation-error"></span>
+            </div>
+            <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 pt-3 border-top">
+                <a asp-action="Listar" class="btn btn-light rounded-pill px-4 py-2">Cancelar</a>
+                <button type="submit" class="btn btn-outline-success fw-semibold rounded-pill px-4 py-2"
+                        disabled="@(amigos.Count == 0 || revistas.Count == 0)">Registrar empréstimo</button>
+            </div>
+        </form>
+    </section>
+</main>

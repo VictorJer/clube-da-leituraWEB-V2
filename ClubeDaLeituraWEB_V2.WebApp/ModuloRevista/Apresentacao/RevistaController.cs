@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,11 +10,16 @@ public class RevistaController : Controller
 {
     private readonly IRepositorioRevista repositorioRevista;
     private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly IRepositorioEmprestimo repositorioEmprestimo;
 
-    public RevistaController(IRepositorioRevista repositorioRevista, IRepositorioCaixa repositorioCaixa)
+    public RevistaController(
+        IRepositorioRevista repositorioRevista,
+        IRepositorioCaixa repositorioCaixa,
+        IRepositorioEmprestimo repositorioEmprestimo)
     {
         this.repositorioRevista = repositorioRevista;
         this.repositorioCaixa = repositorioCaixa;
+        this.repositorioEmprestimo = repositorioEmprestimo;
     }
 
     [HttpGet]
@@ -111,6 +117,10 @@ public class RevistaController : Controller
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
+        bool emprestimoAtivo = PossuiEmprestimoAtivo(revistaAtual.Id);
+        if (emprestimoAtivo && viewModel.Status != StatusRevista.Emprestada)
+            ModelState.AddModelError(nameof(viewModel.Status), "A revista não pode deixar o status emprestada enquanto o empréstimo estiver aberto.");
+
         if (!ModelState.IsValid)
         {
             PrepararCaixas();
@@ -141,6 +151,12 @@ public class RevistaController : Controller
         if (revista == null)
             return RedirectToAction(nameof(Listar));
 
+        if (repositorioEmprestimo.Filtrar(emprestimo => emprestimo.Revista?.Id == revista.Id).Count > 0)
+        {
+            TempData["Aviso"] = "Esta revista não pode ser excluída porque possui empréstimos vinculados.";
+            return RedirectToAction(nameof(Listar));
+        }
+
         ExcluirRevistaViewModel viewModel = new(
             revista.Id,
             revista.Titulo,
@@ -157,8 +173,16 @@ public class RevistaController : Controller
     public ActionResult Excluir(ExcluirRevistaViewModel viewModel)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(viewModel.Id);
-        if (revista != null)
-            repositorioRevista.Excluir(revista);
+        if (revista == null)
+            return RedirectToAction(nameof(Listar));
+
+        if (repositorioEmprestimo.Filtrar(emprestimo => emprestimo.Revista?.Id == revista.Id).Count > 0)
+        {
+            TempData["Aviso"] = "Esta revista não pode ser excluída porque possui empréstimos vinculados.";
+            return RedirectToAction(nameof(Listar));
+        }
+
+        repositorioRevista.Excluir(revista);
 
         return RedirectToAction(nameof(Listar));
     }
@@ -175,5 +199,11 @@ public class RevistaController : Controller
             .OrderBy(caixa => caixa.Etiqueta)
             .Select(caixa => new SelectListItem(caixa.Etiqueta, caixa.Id))
             .ToList();
+    }
+
+    private bool PossuiEmprestimoAtivo(string revistaId)
+    {
+        return repositorioEmprestimo.Filtrar(emprestimo =>
+            emprestimo.Revista?.Id == revistaId && !emprestimo.DataDevolucao.HasValue).Count > 0;
     }
 }

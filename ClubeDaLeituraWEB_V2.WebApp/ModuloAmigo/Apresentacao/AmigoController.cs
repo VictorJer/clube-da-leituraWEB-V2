@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Apresentacao;
@@ -6,10 +7,12 @@ namespace ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Apresentacao;
 public class AmigoController : Controller
 {
     private readonly IRepositorioAmigo repositorioAmigo;
+    private readonly IRepositorioEmprestimo repositorioEmprestimo;
 
-    public AmigoController(IRepositorioAmigo repositorioAmigo)
+    public AmigoController(IRepositorioAmigo repositorioAmigo, IRepositorioEmprestimo repositorioEmprestimo)
     {
         this.repositorioAmigo = repositorioAmigo;
+        this.repositorioEmprestimo = repositorioEmprestimo;
     }
 
     [HttpGet]
@@ -89,6 +92,12 @@ public class AmigoController : Controller
         if (amigo == null)
             return RedirectToAction(nameof(Listar));
 
+        if (PossuiEmprestimos(amigo.Id))
+        {
+            TempData["Aviso"] = "Este amigo não pode ser excluído porque possui empréstimos vinculados.";
+            return RedirectToAction(nameof(Listar));
+        }
+
         ExcluirAmigoViewModel viewModel = new(
             amigo.Id,
             amigo.Nome,
@@ -103,10 +112,23 @@ public class AmigoController : Controller
     public ActionResult Excluir(ExcluirAmigoViewModel viewModel)
     {
         Amigo? amigo = repositorioAmigo.SelecionarPorId(viewModel.Id);
-        if (amigo != null)
-            repositorioAmigo.Excluir(amigo);
+        if (amigo == null)
+            return RedirectToAction(nameof(Listar));
+
+        if (PossuiEmprestimos(amigo.Id))
+        {
+            TempData["Aviso"] = "Este amigo não pode ser excluído porque possui empréstimos vinculados.";
+            return RedirectToAction(nameof(Listar));
+        }
+
+        repositorioAmigo.Excluir(amigo);
 
         return RedirectToAction(nameof(Listar));
+    }
+
+    private bool PossuiEmprestimos(string amigoId)
+    {
+        return repositorioEmprestimo.Filtrar(emprestimo => emprestimo.Amigo?.Id == amigoId).Count > 0;
     }
 
     private void AdicionarErrosDeDominio(Amigo amigo)
