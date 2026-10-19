@@ -33,6 +33,18 @@
                         <li class="nav-item"><a class="nav-link" href="/#modulos">O clube</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#sobre">Como funciona</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#modulos">Nosso acervo</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Módulos
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-controller="Amigo" asp-action="Listar">Amigos</a></li>
+                                <li><a class="dropdown-item" asp-controller="Caixa" asp-action="Listar">Caixas</a></li>
+                                <li><a class="dropdown-item" asp-controller="Revista" asp-action="Listar">Revistas</a></li>
+                                <li><a class="dropdown-item" asp-controller="Emprestimo" asp-action="Listar">Empréstimos</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </nav>
