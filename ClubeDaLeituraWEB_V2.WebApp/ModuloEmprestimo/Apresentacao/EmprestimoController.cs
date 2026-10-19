@@ -1,3 +1,4 @@
+using System.Globalization;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
@@ -47,6 +48,7 @@ public class EmprestimoController : Controller
                 emprestimo.DataEmprestimo,
                 emprestimo.DataDevolucaoPrevista,
                 emprestimo.DataDevolucao,
+                emprestimo.Multa,
                 emprestimo.Status))
             .ToList();
 
@@ -119,6 +121,9 @@ public class EmprestimoController : Controller
             emprestimo.Revista.Status = StatusRevista.Disponivel;
 
         repositorioEmprestimo.Editar(emprestimo.Id, emprestimo);
+        TempData["Sucesso"] = emprestimo.Multa > 0
+            ? $"Devolução registrada. Multa por atraso: {emprestimo.Multa.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))}."
+            : "Devolução registrada sem multa.";
         return RedirectToAction(nameof(Listar), new { amigoId = emprestimo.Amigo?.Id });
     }
 

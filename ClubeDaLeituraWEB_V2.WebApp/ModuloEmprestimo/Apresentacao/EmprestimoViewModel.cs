@@ -12,6 +12,7 @@ public record EmprestimoListarItemViewModel(
     DateTime DataEmprestimo,
     DateTime DataDevolucaoPrevista,
     DateTime? DataDevolucao,
+    decimal Multa,
     StatusEmprestimo Status
 );
 

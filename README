@@ -90,6 +90,7 @@ empréstimos.
 - Empréstimos atrasados devem ser destacados visualmente
 - A data de devolução é calculada automaticamente (data empréstimo + dias da
   caixa)
+- Em caso de devolução após o prazo, cobrar multa de R$ 2,00 por dia de atraso
 
 ## Como utilizar
 

@@ -6,11 +6,16 @@ namespace ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 
 public class Emprestimo : EntidadeBase<Emprestimo>
 {
+    public const decimal ValorMultaPorDia = 2m;
+
     public Amigo? Amigo { get; set; }
     public Revista? Revista { get; set; }
     public DateTime DataEmprestimo { get; set; }
     public DateTime DataDevolucaoPrevista { get; set; }
     public DateTime? DataDevolucao { get; set; }
+    public decimal Multa => DataDevolucao.HasValue
+        ? Math.Max(0, (DataDevolucao.Value.Date - DataDevolucaoPrevista.Date).Days) * ValorMultaPorDia
+        : 0m;
     public StatusEmprestimo Status => DataDevolucao.HasValue
         ? StatusEmprestimo.Concluido
         : DataDevolucaoPrevista.Date < DateTime.Today

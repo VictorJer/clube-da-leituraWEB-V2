@@ -1,4 +1,5 @@
 @model ListarEmprestimosViewModel
+@using System.Globalization
 
 @{
     Layout = "~/Compartilhado/Views/_Layout.cshtml";
@@ -30,6 +31,10 @@
             {
                 <div class="alert alert-warning" role="alert">@aviso</div>
             }
+            @if (TempData["Sucesso"] is string sucesso)
+            {
+                <div class="alert alert-success" role="status">@sucesso</div>
+            }
 
             @if (Model.NomeAmigo is not null)
             {
@@ -48,7 +53,7 @@
             {
                 <div class="table-responsive caixa-table-wrap">
                     <table class="table align-middle mb-0">
-                        <caption class="visually-hidden">Empréstimos, prazos, status e devoluções</caption>
+                        <caption class="visually-hidden">Empréstimos, prazos, status, devoluções e multas</caption>
                         <thead>
                             <tr>
                                 @if (Model.NomeAmigo is null)
@@ -59,6 +64,7 @@
                                 <th scope="col">Data do empréstimo</th>
                                 <th scope="col">Devolução prevista</th>
                                 <th scope="col">Devolução realizada</th>
+                                <th scope="col">Multa</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-end">Ações</th>
                             </tr>
@@ -76,6 +82,9 @@
                                         <td>@emprestimo.DataEmprestimo.ToString("dd/MM/yyyy")</td>
                                         <td>@emprestimo.DataDevolucaoPrevista.ToString("dd/MM/yyyy")</td>
                                         <td>@(emprestimo.DataDevolucao?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                        <td>@(emprestimo.DataDevolucao.HasValue
+                                            ? emprestimo.Multa.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))
+                                            : "—")</td>
                                         <td><span
                                             class="status-badge status-@emprestimo.Status.ToString().ToLowerInvariant()">@Html.DisplayFor(_
                                             => emprestimo.Status)</span></td>
