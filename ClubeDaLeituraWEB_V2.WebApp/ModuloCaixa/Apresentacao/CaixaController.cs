@@ -135,11 +135,11 @@ public class CaixaController : Controller
         if (caixa == null)
             return RedirectToAction(nameof(Listar));
 
-        if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == id).Count > 0)
-        {
-            TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
-            return RedirectToAction(nameof(Listar));
-        }
+        // if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == id).Count > 0)
+        // {
+        //     TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
+        //     return RedirectToAction(nameof(Listar));
+        // }
 
         ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
             id,
@@ -155,15 +155,21 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
+        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+
         Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
 
         if (caixa == null)
             return RedirectToAction(nameof(Listar));
 
-        if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == excluirVm.Id).Count > 0)
+        foreach (Revista revista in revistas)
         {
-            TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
-            return RedirectToAction(nameof(Listar));
+            if (string.Equals(revista.Caixa.Id, excluirVm.Id))
+            {
+                TempData["MensagemErro"] = "Esta caixa n pode ser excluida póis esta relacionada a uma revista!";
+
+                return RedirectToAction(nameof(Listar));
+            }
         }
 
         repositorioCaixa.Excluir(caixa);
