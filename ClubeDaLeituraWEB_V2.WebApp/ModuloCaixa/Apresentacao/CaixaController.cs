@@ -53,6 +53,18 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarCaixaViewModel vm)
     {
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        foreach (Caixa c in caixas)
+        {
+            if (string.Equals(c.Etiqueta, vm.Etiqueta, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(vm.Etiqueta), "Já existe uma caixa com essa etiqueta");
+
+                return View(vm);
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(vm);
 
@@ -89,6 +101,18 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Editar(EditarCaixaViewModel vm)
     {
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        foreach (Caixa c in caixas)
+        {
+            if (c.Id != vm.Id && string.Equals(c.Etiqueta, vm.Etiqueta, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(vm.Etiqueta), "Já existe uma caixa com essa etiqueta");
+
+                return View(vm);
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(vm);
 
