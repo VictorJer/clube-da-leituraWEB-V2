@@ -104,7 +104,7 @@ empréstimos.
 4. Para executar o projeto compilando em tempo real
 
    ```bash
-   dotnet run --project ClubeDaLeituraWeb.WebApp
+   dotnet run --project .\ClubeDaLeituraWEB_V2.WebApp\ClubeDaLeituraWEB_V2.WebApp.csproj
    ```
 
 ## Requisitos
