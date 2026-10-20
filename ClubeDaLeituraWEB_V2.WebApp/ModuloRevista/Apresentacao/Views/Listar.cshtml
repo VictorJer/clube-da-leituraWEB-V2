@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="~/css/revistas.css" />
 }
 
+@if (TempData["MensagemErro"] is string mensagemErro)
+{
+    <div class="alert alert-danger border-start border-danger border-4 rounded-3" role="alert">
+        @mensagemErro
+    </div>
+}
+
 <main id="conteudo" class="container py-5">
     <header class="d-flex flex-column flex-sm-row align-items-sm-end justify-content-between gap-3 mb-4">
         <div>
