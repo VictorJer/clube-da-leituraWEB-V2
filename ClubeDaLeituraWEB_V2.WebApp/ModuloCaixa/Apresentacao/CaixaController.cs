@@ -1,3 +1,4 @@
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao.Extensions;
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
@@ -67,13 +68,7 @@ public class CaixaController : Controller
 
         if (result.IsFailed)
         {
-            foreach (IError erro in result.Errors)
-            {
-                string campo =
-                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
-
-                ModelState.AddModelError(campo, erro.Message);
-            }
+            ModelState.AddModelError(result);
 
             return View(vm);
         }
@@ -123,13 +118,7 @@ public class CaixaController : Controller
 
         if (result.IsFailed)
         {
-            foreach (IError erro in result.Errors)
-            {
-                string campo =
-                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
-
-                ModelState.AddModelError(campo, erro.Message);
-            }
+            ModelState.AddModelError(result);
 
             return View(vm);
         }
