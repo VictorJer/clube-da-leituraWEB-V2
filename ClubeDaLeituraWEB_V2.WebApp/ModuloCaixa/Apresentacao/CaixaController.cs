@@ -159,9 +159,6 @@ public class CaixaController : Controller
 
         Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
 
-        if (caixa == null)
-            return RedirectToAction(nameof(Listar));
-
         foreach (Revista revista in revistas)
         {
             if (string.Equals(revista.Caixa.Id, excluirVm.Id))
