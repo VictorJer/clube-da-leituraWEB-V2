@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using FluentResults;
 
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
@@ -6,10 +7,12 @@ namespace ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 public class ServicoCaixa
 {
     private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly IRepositorioRevista repositorioRevista;
 
-    public ServicoCaixa(IRepositorioCaixa repositorioCaixa)
+    public ServicoCaixa(IRepositorioCaixa repositorioCaixa, IRepositorioRevista repositorioRevista)
     {
         this.repositorioCaixa = repositorioCaixa;
+        this.repositorioRevista = repositorioRevista;
     }
 
     public Result Cadastrar(CadastrarCaixaDto caixaDto)
@@ -47,14 +50,43 @@ public class ServicoCaixa
         return Result.Ok();
     }
 
-    public void Excluir()
+    public Result Excluir(string id)
     {
-        
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+
+        if (caixa == null)
+            return Result.Fail("Caixa não encontrada");
+
+        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+
+        foreach (Revista revista in revistas)
+        {
+            if (revista.Caixa != null && string.Equals(revista.Caixa.Id, caixa.Id))
+            {
+                return Result.Fail("Esta caixa não pode ser excluída porque está relacionada a uma revista!");
+            }
+        }        
+
+        repositorioCaixa.Excluir(id);
+
+        return Result.Ok();
     }
 
-    public void SelecionarPorId()
+    public List<ListarCaixasDto> SelecionarTodos()
     {
-        
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        return caixas.Select(c => new ListarCaixasDto(c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo)).ToList();
+    }
+
+    public Result<DetalhesCaixaDto> SelecionarPorId(string id)
+    {
+        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+
+        if (caixa == null)
+            return Result.Fail("Caixa não encontrada");
+
+        return Result.Ok(new DetalhesCaixaDto(caixa.Id, caixa.Etiqueta, caixa.Cor, caixa.DiasDeEmprestimo));
     }
 
     private bool ExiteCaixaComEtiqueta(string etiqueta, string? idnull = null)

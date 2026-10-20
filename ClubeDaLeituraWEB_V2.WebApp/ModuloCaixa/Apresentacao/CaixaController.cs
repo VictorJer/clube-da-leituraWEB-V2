@@ -9,24 +9,20 @@ using Microsoft.AspNetCore.Mvc;
 public class CaixaController : Controller
 {
     private readonly ServicoCaixa servicoCaixa;
-    private readonly IRepositorioCaixa repositorioCaixa;
-    private readonly IRepositorioRevista repositorioRevista;
 
-    public CaixaController(IRepositorioCaixa repositorioCaixa, IRepositorioRevista repositorioRevista, ServicoCaixa servicoCaixa)
+    public CaixaController(ServicoCaixa servicoCaixa)
     {
-        this.repositorioCaixa = repositorioCaixa;
-        this.repositorioRevista = repositorioRevista;
         this.servicoCaixa = servicoCaixa;
     }
 
     [HttpGet]
     public ActionResult Listar()
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+        List<ListarCaixasDto> caixas = servicoCaixa.SelecionarTodos();
 
         List<ListarCaixasViewModel> listarCaixasViews = new List<ListarCaixasViewModel>();
 
-        foreach (Caixa c in caixas)
+        foreach (ListarCaixasDto c in caixas)
         {
             ListarCaixasViewModel vm = new ListarCaixasViewModel(
                 c.Id,
@@ -88,16 +84,22 @@ public class CaixaController : Controller
     [HttpGet]
     public ActionResult Editar(string id)
     {
-        Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(id);
+        Result<DetalhesCaixaDto> result = servicoCaixa.SelecionarPorId(id);
 
-        if (caixaSelecionada == null)
+        if (result.IsFailed)
+        {
+            TempData["MensagemErro"] = result.Errors.First().Message;
+
             return RedirectToAction(nameof(Listar));
+        }
+
+        DetalhesCaixaDto dto = result.Value;
 
         EditarCaixaViewModel viewModel = new EditarCaixaViewModel(
-            caixaSelecionada.Id,
-            caixaSelecionada.Etiqueta,
-            caixaSelecionada.Cor,
-            caixaSelecionada.DiasDeEmprestimo
+            dto.Id,
+            dto.Etiqueta,
+            dto.Cor,
+            dto.DiasDeEmprestimo
         );
 
         return View(viewModel);
@@ -138,10 +140,14 @@ public class CaixaController : Controller
     [HttpGet]
     public ActionResult Excluir(string id)
     {
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+        Result<DetalhesCaixaDto> result = servicoCaixa.SelecionarPorId(id);
 
-        if (caixa == null)
-            return RedirectToAction(nameof(Listar));
+        if (result.IsFailed)
+        {
+            TempData["MensagemErro"] = result.Errors.First().Message;
+
+            return RedirectToAction(nameof(Listar));            
+        }
 
         // if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == id).Count > 0)
         // {
@@ -149,11 +155,13 @@ public class CaixaController : Controller
         //     return RedirectToAction(nameof(Listar));
         // }
 
+        DetalhesCaixaDto dto = result.Value;
+
         ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
             id,
-            caixa.Etiqueta,
-            caixa.Cor,
-            caixa.DiasDeEmprestimo
+            dto.Etiqueta,
+            dto.Cor,
+            dto.DiasDeEmprestimo
         );
 
         return View(excluirVm);
@@ -163,23 +171,12 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
-        if (caixa == null)
-            return RedirectToAction(nameof(Listar));
+        Result result = servicoCaixa.Excluir(excluirVm.Id);
 
-        List<Revista> revistas = repositorioRevista.SelecionarTodos();
-
-        foreach (Revista revista in revistas)
+        if (result.IsFailed)
         {
-            if (revista.Caixa != null && string.Equals(revista.Caixa.Id, excluirVm.Id, StringComparison.OrdinalIgnoreCase))
-            {
-                TempData["MensagemErro"] = "Esta caixa não pode ser excluída porque está relacionada a uma revista!";
-
-                return RedirectToAction(nameof(Listar));
-            }
+            TempData["MensagemErro"] = result.Errors.First().Message;
         }
-
-        repositorioCaixa.Excluir(caixa);
 
         return RedirectToAction(nameof(Listar));
     }
