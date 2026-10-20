@@ -1,113 +1,49 @@
 # Clube da Leitura
 
-Gustavo tem uma coleção grande de revistas em quadrinhos. Por isso, resolveu
-emprestar para os amigos. Assim foi criado o Clube da Leitura.
+Aplicação web em ASP.NET Core MVC para organizar uma coleção de revistas em quadrinhos e controlar os empréstimos entre amigos.
 
-Mas para não perder nenhuma revista, seu pai contratou os alunos da Academia do
-Programador para fazer uma aplicação que cadastra as revistas e controla os
-empréstimos.
+## Funcionalidades
 
-## 1. Módulo de Caixas
+- **Caixas:** cadastro, edição e exclusão, com etiqueta, cor e prazo de empréstimo. Etiquetas não podem se repetir, e caixas vinculadas a revistas não podem ser excluídas.
+- **Revistas:** cadastro, edição, consulta e exclusão, com título, edição, data de publicação, caixa e status. O título deve ter de 2 a 100 caracteres, a edição deve ser positiva e a data não pode ser futura. Revistas com empréstimos vinculados não podem ser excluídas.
+- **Amigos:** cadastro, edição, consulta e exclusão, com nome, responsável e telefone. O telefone deve conter 10 ou 11 dígitos; nome e telefone não podem se repetir. Amigos com empréstimos vinculados não podem ser excluídos.
+- **Empréstimos:** registro e consulta de empréstimos, incluindo filtro por amigo e registro de devolução. O prazo é calculado pelos dias definidos na caixa da revista. Empréstimos em aberto podem aparecer como atrasados, e a multa é de R$ 2,00 por dia. Um amigo pode ter apenas um empréstimo em aberto por vez, e só revistas disponíveis podem ser emprestadas.
 
-**Requisitos Funcionais:**
+## Tecnologias
 
-- O sistema deve permitir cadastrar novas caixas
-- O sistema deve permitir editar caixas existentes
-- O sistema deve permitir excluir caixas
-- O sistema deve permitir visualizar todas as caixas
+- .NET 10 SDK
+- ASP.NET Core MVC com Razor Views
+- FluentResults 4.0.0
+- Persistência local em arquivo JSON
 
-**Regras de Negócio:**
+## Pré-requisitos
 
-- Campos obrigatórios:
-- Etiqueta (texto único, máximo 50 caracteres)
-- Cor (seleção de paleta ou hexadecimal)
-- Dias de empréstimo (número, padrão 7)
-- Não pode haver etiquetas duplicadas
-- Não permitir excluir uma caixa caso tenha revistas vinculadas
-- Cada caixa define o prazo máximo para empréstimo de suas revistas
+Instale o [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-## 2. Módulo de Revistas
+## Como executar
 
-**Requisitos Funcionais:**
+Na pasta raiz do repositório, restaure as dependências:
 
-- O sistema deve permitir cadastrar novas revistas
-- O sistema deve permitir editar revistas existentes
-- O sistema deve permitir excluir revistas
-- O sistema deve permitir visualizar todas as revistas
+```bash
+dotnet restore ClubeDaLeituraWEB_V2.slnx
+```
 
-**Regras de Negócio:**
+Inicie a aplicação:
 
-- Campos obrigatórios:
-  - Título (2-100 caracteres)
-  - Número da edição (número positivo)
-  - Ano de publicação (data válida)
-  - Caixa (seleção obrigatória)
-- Não pode haver revistas com mesmo título e edição
+```bash
+dotnet run --project ClubeDaLeituraWEB_V2.WebApp/ClubeDaLeituraWEB_V2.WebApp.csproj
+```
 
-## 3. Módulo de Amigos
+O perfil HTTP de desenvolvimento está configurado em `http://localhost:5228`. Para iniciar com HTTPS, use o perfil `https`, disponível em `ClubeDaLeituraWEB_V2.WebApp/Properties/launchSettings.json`.
 
-**Requisitos Funcionais**
+## Dados
 
-- O sistema deve permitir a inserção de novos amigos
-- O sistema deve permitir a edição de amigos já cadastrados
-- O sistema deve permitir excluir amigos já cadastrados
-- O sistema deve permitir visualizar amigos cadastrados
+Os dados são salvos localmente em `dados.json`, dentro da pasta `ClubeDaLeituraWeb` no diretório de dados locais do usuário atual. O arquivo é criado automaticamente quando a aplicação salva dados pela primeira vez.
 
-**Regras de Negócio:**
+## Estrutura do projeto
 
-- Campos obrigatórios:
-  - Nome (mínimo 3 caracteres, máximo 100)
-  - Nome do responsável (mínimo 3 caracteres, máximo 100)
-  - Telefone (formato validado: 10-11 dígitos)
-  - Não pode haver amigos com o mesmo nome e telefone
-
-## 4. Módulo de Empréstimos
-
-**Requisitos Funcionais:**
-
-- O sistema deve permitir registrar novos empréstimos
-- O sistema deve permitir registrar devoluções
-- O sistema deve permitir visualizar empréstimos abertos e fechados
-
-**Refatorações:**
-
-**Revistas:**
-
-- O sistema deve armazenar e mostrar o status atual das revistas cadastradas (disponível/emprestada/reservada)
-
-**Amigos:**
-
-- O sistema deve permitir visualizar os empréstimos de amigos específicos
-- Não permitir excluir um amigo caso tenha empréstimos vinculados
-  Regras de Negócio:
-- Campos obrigatórios:
-  - Amigo
-  - Revista (disponível no momento)
-  - Data empréstimo (automática)
-  - Data devolução (calculada conforme caixa)
-- Status possíveis: Aberto / Concluído / Atrasado
-- Cada amigo só pode ter um empréstimo ativo por vez
-- Empréstimos atrasados devem ser destacados visualmente
-- A data de devolução é calculada automaticamente (data empréstimo + dias da
-  caixa)
-- Em caso de devolução após o prazo, cobrar multa de R$ 2,00 por dia de atraso
-
-## Como utilizar
-
-1. Clone o repositório ou baixe o código fonte.
-2. Abra o terminal ou o prompt de comando e navegue até a pasta raiz
-3. Utilize o comando abaixo para restaurar as dependências do projeto.
-
-   ```bash
-   dotnet restore
-   ```
-
-4. Para executar o projeto compilando em tempo real
-
-   ```bash
-   dotnet run --project .\ClubeDaLeituraWEB_V2.WebApp\ClubeDaLeituraWEB_V2.WebApp.csproj
-   ```
-
-## Requisitos
-
-- .NET 10.0 SDK
+- `ClubeDaLeituraWEB_V2.WebApp/ModuloCaixa`: cadastro e regras de caixas.
+- `ClubeDaLeituraWEB_V2.WebApp/ModuloRevista`: cadastro e regras de revistas.
+- `ClubeDaLeituraWEB_V2.WebApp/ModuloAmigo`: cadastro e regras de amigos.
+- `ClubeDaLeituraWEB_V2.WebApp/ModuloEmprestimo`: empréstimos, devoluções, status e multas.
+- `ClubeDaLeituraWEB_V2.WebApp/Compartilhado`: componentes e infraestrutura compartilhados, incluindo persistência JSON.
