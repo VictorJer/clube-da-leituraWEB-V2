@@ -3,6 +3,7 @@ using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 public class CaixaController : Controller
@@ -56,28 +57,30 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarCaixaViewModel vm)
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
-
-        foreach (Caixa c in caixas)
-        {
-            if (string.Equals(c.Etiqueta, vm.Etiqueta, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(vm.Etiqueta), "Já existe uma caixa com essa etiqueta");
-
-                return View(vm);
-            }
-        }
 
         if (!ModelState.IsValid)
-            return View(vm);
+            return View(vm);        
 
-        Caixa novaCaixa = new Caixa(
+        CadastrarCaixaDto dto = new CadastrarCaixaDto(
             vm.Etiqueta,
             vm.Cor,
             vm.DiasDeEmprestimo
         );
 
-        repositorioCaixa.Cadastrar(novaCaixa);
+        var result = servicoCaixa.Cadastrar(dto);
+
+        if (result.IsFailed)
+        {
+            foreach (IError erro in result.Errors)
+            {
+                string campo =
+                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
+
+            return View(vm);
+        }
 
         return RedirectToAction(nameof(Listar));
     }
