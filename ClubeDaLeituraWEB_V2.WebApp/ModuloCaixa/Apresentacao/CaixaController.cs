@@ -83,7 +83,7 @@ public class CaixaController : Controller
 
         if (result.IsFailed)
         {
-            TempData["MensagemErro"] = result.Errors.First().Message;
+            TempData.AddErrorMessagem(result);
 
             return RedirectToAction(nameof(Listar));
         }
@@ -133,7 +133,7 @@ public class CaixaController : Controller
 
         if (result.IsFailed)
         {
-            TempData["MensagemErro"] = result.Errors.First().Message;
+            TempData.AddErrorMessagem(result);
 
             return RedirectToAction(nameof(Listar));            
         }
@@ -164,7 +164,9 @@ public class CaixaController : Controller
 
         if (result.IsFailed)
         {
-            TempData["MensagemErro"] = result.Errors.First().Message;
+            TempData.AddErrorMessagem(result);
+            
+            return RedirectToAction(nameof(Listar));
         }
 
         return RedirectToAction(nameof(Listar));
