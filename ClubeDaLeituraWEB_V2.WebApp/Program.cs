@@ -1,42 +1,12 @@
-using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra.Arquivos;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Infra;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Infra;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Infra;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Infra;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Aplicacao;
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao;
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddScoped(serviceProvider =>
-{
-    ContextoJson contexto = new ContextoJson();
-    contexto.Carregar();
-    return contexto;
-});
-
-
-builder.Services.AddScoped<IRepositorioCaixa, RepositorioCaixaEmArquivo>();
-builder.Services.AddScoped<IRepositorioAmigo, RepositorioAmigoEmArquivo>();
-builder.Services.AddScoped<IRepositorioRevista, RepositorioRevistaEmArquivo>();
-builder.Services.AddScoped<IRepositorioEmprestimo, RepositorioEmprestimoEmArquivo>();
-
-builder.Services.AddScoped<ServicoCaixa>();
-
-
-builder.Services.AddControllersWithViews().AddRazorOptions(options =>
-{
-    options.ViewLocationFormats.Clear();
-
-    options.ViewLocationFormats.Add("/Modulo{1}/Apresentacao/Views/{0}.cshtml");
-
-    options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
-});
-
+builder.Services.AdicionarCamadaInfraestrutura();
+builder.Services.AdicionarCamadaServico();
+builder.Services.AdicionaApresentacap();
 
 var app = builder.Build();
 
