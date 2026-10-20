@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
@@ -6,13 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 
 public class CaixaController : Controller
 {
+    private readonly ServicoCaixa servicoCaixa;
     private readonly IRepositorioCaixa repositorioCaixa;
     private readonly IRepositorioRevista repositorioRevista;
 
-    public CaixaController(IRepositorioCaixa repositorioCaixa, IRepositorioRevista repositorioRevista)
+    public CaixaController(IRepositorioCaixa repositorioCaixa, IRepositorioRevista repositorioRevista, ServicoCaixa servicoCaixa)
     {
         this.repositorioCaixa = repositorioCaixa;
         this.repositorioRevista = repositorioRevista;
+        this.servicoCaixa = servicoCaixa;
     }
 
     [HttpGet]
