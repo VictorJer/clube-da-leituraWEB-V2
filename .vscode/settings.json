@@ -1,3 +1,5 @@
 {
-    "dotnet.defaultSolution": "ClubeDaLeituraWEB_V2.slnx"
+    "dotnet.defaultSolution": "ClubeDaLeituraWEB_V2.slnx",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000
 }

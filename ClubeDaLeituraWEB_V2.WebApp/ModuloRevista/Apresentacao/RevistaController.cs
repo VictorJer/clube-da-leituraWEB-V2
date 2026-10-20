@@ -182,7 +182,7 @@ public class RevistaController : Controller
             return RedirectToAction(nameof(Listar));
         }
 
-        repositorioRevista.Excluir(revista);
+        repositorioRevista.Excluir(revista.Id);
 
         return RedirectToAction(nameof(Listar));
     }

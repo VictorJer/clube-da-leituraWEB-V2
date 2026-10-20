@@ -121,7 +121,7 @@ public class AmigoController : Controller
             return RedirectToAction(nameof(Listar));
         }
 
-        repositorioAmigo.Excluir(amigo);
+        repositorioAmigo.Excluir(viewModel.Id);
 
         return RedirectToAction(nameof(Listar));
     }
