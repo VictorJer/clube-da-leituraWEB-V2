@@ -155,15 +155,17 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
-        List<Revista> revistas = repositorioRevista.SelecionarTodos();
-
         Caixa? caixa = repositorioCaixa.SelecionarPorId(excluirVm.Id);
+        if (caixa == null)
+            return RedirectToAction(nameof(Listar));
+
+        List<Revista> revistas = repositorioRevista.SelecionarTodos();
 
         foreach (Revista revista in revistas)
         {
-            if (string.Equals(revista.Caixa.Id, excluirVm.Id))
+            if (revista.Caixa != null && string.Equals(revista.Caixa.Id, excluirVm.Id, StringComparison.OrdinalIgnoreCase))
             {
-                TempData["MensagemErro"] = "Esta caixa n pode ser excluida póis esta relacionada a uma revista!";
+                TempData["MensagemErro"] = "Esta caixa não pode ser excluída porque está relacionada a uma revista!";
 
                 return RedirectToAction(nameof(Listar));
             }
