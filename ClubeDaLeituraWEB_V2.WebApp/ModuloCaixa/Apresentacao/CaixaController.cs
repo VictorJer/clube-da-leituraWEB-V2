@@ -107,28 +107,30 @@ public class CaixaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Editar(EditarCaixaViewModel vm)
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
-
-        foreach (Caixa c in caixas)
-        {
-            if (c.Id != vm.Id && string.Equals(c.Etiqueta, vm.Etiqueta, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(vm.Etiqueta), "Já existe uma caixa com essa etiqueta");
-
-                return View(vm);
-            }
-        }
-
         if (!ModelState.IsValid)
             return View(vm);
 
-        Caixa caixaAtualizada = new Caixa(
+        EditarCaixaDto dto = new EditarCaixaDto(
+            vm.Id,
             vm.Etiqueta,
             vm.Cor,
             vm.DiasDeEmprestimo
         );
 
-        repositorioCaixa.Editar(vm.Id, caixaAtualizada);
+        var result = servicoCaixa.Editar(dto);
+
+        if (result.IsFailed)
+        {
+            foreach (IError erro in result.Errors)
+            {
+                string campo =
+                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
+
+            return View(vm);
+        }
 
         return RedirectToAction(nameof(Listar));
     }

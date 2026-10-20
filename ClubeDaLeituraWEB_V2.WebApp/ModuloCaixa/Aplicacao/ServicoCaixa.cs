@@ -14,18 +14,8 @@ public class ServicoCaixa
 
     public Result Cadastrar(CadastrarCaixaDto caixaDto)
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
-
-        foreach (Caixa c in caixas)
-        {
-            if (string.Equals(c.Etiqueta, caixaDto.Etiqueta, StringComparison.OrdinalIgnoreCase))
-            {
-                Error errorValidacao = new Error("Já existe uma caixa com essa etiqueta")
-                    .WithMetadata("Campo", nameof(c.Etiqueta));
-
-                return Result.Fail(errorValidacao);
-            }
-        }
+        if (ExiteCaixaComEtiqueta(caixaDto.Etiqueta))
+            return Falha("Etiqueta", "Já existe uma caixa com esta etiqueta");
 
         Caixa novaCaixa = new Caixa(
             caixaDto.Etiqueta,
@@ -38,9 +28,23 @@ public class ServicoCaixa
         return Result.Ok();    
     }
 
-    public void Editar()
+    public Result Editar(EditarCaixaDto dto)
     {
+        if (ExiteCaixaComEtiqueta(dto.Etiqueta, dto.Id))
+            return Falha("Etiqueta", "Já existe uma caixa com esta etiqueta");
         
+        Caixa caixaAtualizada = new Caixa(
+            dto.Etiqueta,
+            dto.Cor,
+            dto.DiasDeEmprestimo
+        );
+
+        bool conseguiuEditar = repositorioCaixa.Editar(dto.Id, caixaAtualizada);
+
+        if (!conseguiuEditar)
+            return Result.Fail("Caixa não encontrado");
+
+        return Result.Ok();
     }
 
     public void Excluir()
@@ -51,5 +55,24 @@ public class ServicoCaixa
     public void SelecionarPorId()
     {
         
+    }
+
+    private bool ExiteCaixaComEtiqueta(string etiqueta, string? idnull = null)
+    {
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        foreach (Caixa c in caixas)
+        {
+            if (c.Id != idnull && string.Equals(c.Etiqueta, etiqueta, StringComparison.OrdinalIgnoreCase))            
+                return true;          
+        }
+
+        return false;
+    }
+    private static Result Falha(string campo, string mensagem)
+    {
+        IError erro = new Error(mensagem).WithMetadata("Campo", campo);
+
+        return Result.Fail(erro);
     }
 }
