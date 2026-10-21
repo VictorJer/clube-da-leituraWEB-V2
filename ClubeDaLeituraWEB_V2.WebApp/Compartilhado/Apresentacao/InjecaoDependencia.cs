@@ -12,5 +12,10 @@ public static class InjecaoDependencia
 
             options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
         });
+
+        services.AddAutoMapper(config =>
+        {
+            config.AddProfile<CaixaProfile>();
+        });
     }
 }

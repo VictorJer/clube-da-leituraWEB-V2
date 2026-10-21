@@ -1,39 +1,39 @@
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao.Extensions;
-using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Infra;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using FluentResults;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 public class CaixaController : Controller
 {
     private readonly ServicoCaixa servicoCaixa;
+    private readonly IMapper mapper;
 
-    public CaixaController(ServicoCaixa servicoCaixa)
+    public CaixaController(ServicoCaixa servicoCaixa, IMapper mapper)
     {
         this.servicoCaixa = servicoCaixa;
+        this.mapper = mapper;
     }
 
     [HttpGet]
     public ActionResult Listar()
     {
-        List<ListarCaixasDto> caixas = servicoCaixa.SelecionarTodos();
+        List<ListarCaixasDto> caixasDtos = servicoCaixa.SelecionarTodos();
 
-        List<ListarCaixasViewModel> listarCaixasViews = new List<ListarCaixasViewModel>();
+        List<ListarCaixasViewModel> listarCaixasViews = mapper.Map<List<ListarCaixasViewModel>>(caixasDtos);
 
-        foreach (ListarCaixasDto c in caixas)
-        {
-            ListarCaixasViewModel vm = new ListarCaixasViewModel(
-                c.Id,
-                c.Etiqueta,
-                c.Cor,
-                c.DiasDeEmprestimo
-            );
+        // foreach (ListarCaixasDto c in caixas)
+        // {
+        //     ListarCaixasViewModel vm = new ListarCaixasViewModel(
+        //         c.Id,
+        //         c.Etiqueta,
+        //         c.Cor,
+        //         c.DiasDeEmprestimo
+        //     );
 
-            listarCaixasViews.Add(vm);
-        }
+        //     listarCaixasViews.Add(vm);
+        // }
 
         return View(listarCaixasViews);
     }
