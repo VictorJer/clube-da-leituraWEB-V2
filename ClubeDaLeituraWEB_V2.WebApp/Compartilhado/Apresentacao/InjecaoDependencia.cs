@@ -1,3 +1,5 @@
+using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
+
 namespace ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao;
 
 public static class InjecaoDependencia

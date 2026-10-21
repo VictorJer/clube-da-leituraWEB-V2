@@ -23,18 +23,6 @@ public class CaixaController : Controller
 
         List<ListarCaixasViewModel> listarCaixasViews = mapper.Map<List<ListarCaixasViewModel>>(caixasDtos);
 
-        // foreach (ListarCaixasDto c in caixas)
-        // {
-        //     ListarCaixasViewModel vm = new ListarCaixasViewModel(
-        //         c.Id,
-        //         c.Etiqueta,
-        //         c.Cor,
-        //         c.DiasDeEmprestimo
-        //     );
-
-        //     listarCaixasViews.Add(vm);
-        // }
-
         return View(listarCaixasViews);
     }
 
@@ -58,11 +46,7 @@ public class CaixaController : Controller
         if (!ModelState.IsValid)
             return View(vm);        
 
-        CadastrarCaixaDto dto = new CadastrarCaixaDto(
-            vm.Etiqueta,
-            vm.Cor,
-            vm.DiasDeEmprestimo
-        );
+        CadastrarCaixaDto dto = mapper.Map<CadastrarCaixaDto>(vm);
 
         var result = servicoCaixa.Cadastrar(dto);
 
@@ -90,12 +74,7 @@ public class CaixaController : Controller
 
         DetalhesCaixaDto dto = result.Value;
 
-        EditarCaixaViewModel viewModel = new EditarCaixaViewModel(
-            dto.Id,
-            dto.Etiqueta,
-            dto.Cor,
-            dto.DiasDeEmprestimo
-        );
+        EditarCaixaViewModel viewModel = mapper.Map<EditarCaixaViewModel>(dto);
 
         return View(viewModel);
     }
@@ -107,12 +86,7 @@ public class CaixaController : Controller
         if (!ModelState.IsValid)
             return View(vm);
 
-        EditarCaixaDto dto = new EditarCaixaDto(
-            vm.Id,
-            vm.Etiqueta,
-            vm.Cor,
-            vm.DiasDeEmprestimo
-        );
+        EditarCaixaDto dto = mapper.Map<EditarCaixaDto>(vm);
 
         var result = servicoCaixa.Editar(dto);
 
@@ -138,20 +112,9 @@ public class CaixaController : Controller
             return RedirectToAction(nameof(Listar));            
         }
 
-        // if (repositorioRevista.Filtrar(revista => revista.Caixa?.Id == id).Count > 0)
-        // {
-        //     TempData["Aviso"] = "Esta caixa não pode ser excluída porque possui revistas vinculadas.";
-        //     return RedirectToAction(nameof(Listar));
-        // }
-
         DetalhesCaixaDto dto = result.Value;
 
-        ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
-            id,
-            dto.Etiqueta,
-            dto.Cor,
-            dto.DiasDeEmprestimo
-        );
+        ExcluirCaixaViewModel excluirVm = mapper.Map<ExcluirCaixaViewModel>(dto);
 
         return View(excluirVm);
     }
