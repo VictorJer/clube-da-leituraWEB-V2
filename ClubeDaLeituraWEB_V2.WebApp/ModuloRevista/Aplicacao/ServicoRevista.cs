@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using FluentResults;
 
@@ -8,12 +9,14 @@ public class ServicoRevista
 {
     private readonly IRepositorioRevista repositorioRevista;
     private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly IRepositorioEmprestimo repositorioEmprestimo;
 
 
-    public ServicoRevista(IRepositorioRevista repositorioRevista, IRepositorioCaixa repositorioCaixa)
+    public ServicoRevista(IRepositorioRevista repositorioRevista, IRepositorioCaixa repositorioCaixa, IRepositorioEmprestimo repositorioEmprestimo)
     {
         this.repositorioRevista = repositorioRevista;
         this.repositorioCaixa = repositorioCaixa;
+        this.repositorioEmprestimo = repositorioEmprestimo;
     }
 
     public Result Cadastrar(CadastrarRevistaDto dto)
@@ -53,6 +56,55 @@ public class ServicoRevista
         );
 
         repositorioRevista.Cadastrar(revista);
+
+        return Result.Ok();
+    }
+
+    public Result Editar(EditarRevistaDto dto)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(dto.Id);
+
+        if (revista == null)
+            return Result.Fail("Revista não encontrada.");
+        
+        Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(dto.CaixaId);
+
+        if (caixaSelecionada == null)
+        {
+            return Result.Fail(
+                new Error("Selecione uma caixa cadastrada.")
+                    .WithMetadata("Campo", nameof(dto.CaixaId))
+            );            
+        }
+
+        bool emprestimoAtivo = repositorioEmprestimo.Filtrar(emprestimo =>
+            emprestimo.Revista?.Id == revista.Id && !emprestimo.DataDevolucao.HasValue).Count > 0;
+
+        if (emprestimoAtivo && dto.Status != StatusRevista.Emprestada)
+        {
+            return Result.Fail(
+                new Error("A revista não pode deixar o status emprestada enquanto o empréstimo estiver aberto.")
+                    .WithMetadata("Campo", nameof(dto.Status))
+            );
+        }
+
+        if (ExisteRevistaComMesmoTituloEEdicao(dto.Titulo, dto.NumeroEdicao, dto.Id))
+        {
+            return Result.Fail(
+                new Error("Já existe uma revista com esse título e edição.")
+                    .WithMetadata("Campo", nameof(dto.NumeroEdicao))
+            );
+        }
+
+        if (dto.AnoPublicacao > DateTime.Now)
+        {
+            return Result.Fail(
+                new Error("O ano de publicação não pode ser futuro.")
+                    .WithMetadata("Campo", nameof(dto.AnoPublicacao))
+            );
+        }
+
+        repositorioRevista.Editar(dto.Id, new Revista(dto.Titulo, dto.NumeroEdicao, dto.AnoPublicacao, caixaSelecionada, dto.Status));
 
         return Result.Ok();
     }

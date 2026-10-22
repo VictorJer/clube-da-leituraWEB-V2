@@ -60,7 +60,7 @@
                             <th scope="row" class="etiqueta-cell">@revista.Titulo</th>
                             <td>@revista.NumeroEdicao</td>
                             <td>@revista.AnoPublicacao.ToString("dd/MM/yyyy")</td>
-                            <td>@revista.Caixa</td>
+                            <td>@revista.EtiquetaCaixa</td>
                             <td><span class="status-badge status-@revista.Status.ToString().ToLowerInvariant()">@Html.DisplayFor(_ => revista.Status)</span></td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2">

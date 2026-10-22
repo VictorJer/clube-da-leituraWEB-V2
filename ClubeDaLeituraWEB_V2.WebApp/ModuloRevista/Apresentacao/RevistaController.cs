@@ -103,35 +103,20 @@ public class RevistaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Editar(EditarRevistaViewModel viewModel)
     {
-        Revista? revistaAtual = repositorioRevista.SelecionarPorId(viewModel.Id);
-        if (revistaAtual == null)
-            return RedirectToAction(nameof(Listar));
-
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
-        if (caixa == null)
-            ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
-
-        bool emprestimoAtivo = PossuiEmprestimoAtivo(revistaAtual.Id);
-        if (emprestimoAtivo && viewModel.Status != StatusRevista.Emprestada)
-            ModelState.AddModelError(nameof(viewModel.Status), "A revista não pode deixar o status emprestada enquanto o empréstimo estiver aberto.");
-
         if (!ModelState.IsValid)
         {
             PrepararCaixas();
             return View(viewModel);
         }
 
-        if (caixa != null)
-        {
-            Revista revistaAtualizada = new(
-                viewModel.Titulo,
-                viewModel.NumeroEdicao,
-                viewModel.AnoPublicacao,
-                caixa,
-                viewModel.Status);
+        EditarRevistaDto revistaDto = mapper.Map<EditarRevistaDto>(viewModel);
+        var result = servicoRevista.Editar(revistaDto);
 
-            if (ModelState.IsValid)
-                repositorioRevista.Editar(viewModel.Id, revistaAtualizada);
+        if (result.IsFailed)
+        {
+            ModelState.AddModelError(result);
+            PrepararCaixas();
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Listar));
@@ -188,9 +173,5 @@ public class RevistaController : Controller
             .ToList();
     }
 
-    private bool PossuiEmprestimoAtivo(string revistaId)
-    {
-        return repositorioEmprestimo.Filtrar(emprestimo =>
-            emprestimo.Revista?.Id == revistaId && !emprestimo.DataDevolucao.HasValue).Count > 0;
-    }
+
 }
