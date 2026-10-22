@@ -1,5 +1,7 @@
+using AutoMapper;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,31 +13,31 @@ public class RevistaController : Controller
     private readonly IRepositorioRevista repositorioRevista;
     private readonly IRepositorioCaixa repositorioCaixa;
     private readonly IRepositorioEmprestimo repositorioEmprestimo;
+    private readonly IMapper mapper;
+    private readonly ServicoRevista servicoRevista;
 
     public RevistaController(
         IRepositorioRevista repositorioRevista,
         IRepositorioCaixa repositorioCaixa,
-        IRepositorioEmprestimo repositorioEmprestimo)
+        IRepositorioEmprestimo repositorioEmprestimo,
+        IMapper mapper,
+        ServicoRevista servicoRevista)
     {
         this.repositorioRevista = repositorioRevista;
         this.repositorioCaixa = repositorioCaixa;
         this.repositorioEmprestimo = repositorioEmprestimo;
+        this.mapper = mapper;
+        this.servicoRevista = servicoRevista;
     }
 
     [HttpGet]
     public ActionResult Listar()
     {
-        List<ListarRevistasViewModel> revistas = repositorioRevista.SelecionarTodos()
-            .Select(revista => new ListarRevistasViewModel(
-                revista.Id,
-                revista.Titulo,
-                revista.NumeroEdicao,
-                revista.AnoPublicacao,
-                revista.Caixa?.Etiqueta ?? "Caixa não encontrada",
-                revista.Status))
-            .ToList();
+        List<ListarRevistasDto> dto = servicoRevista.SelecionarTodos();
 
-        return View(revistas);
+        List<ListarRevistasViewModel> vm = mapper.Map<List<ListarRevistasViewModel>>(dto);
+
+        return View(vm);
     }
 
     [HttpGet]
