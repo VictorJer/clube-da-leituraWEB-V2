@@ -20,11 +20,27 @@ public class ServicoRevista
     {
         Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(dto.CaixaId);
 
+        if (caixaSelecionada == null)
+        {
+            return Result.Fail(
+                new Error("Selecione uma caixa cadastrada.")
+                    .WithMetadata("Campo", nameof(dto.CaixaId))
+            );            
+        }
+
         if (ExisteRevistaComMesmoTituloEEdicao(dto.Titulo, dto.NumeroEdicao))
         {
             return Result.Fail(
                 new Error("Já existe uma revista com esse título e edição.")
-                    .WithMetadata("Campo", "NumeroEdicao")
+                    .WithMetadata("Campo", nameof(dto.NumeroEdicao))
+            );
+        }
+
+        if (dto.AnoPublicacao > DateTime.Now)
+        {
+            return Result.Fail(
+                new Error("O ano de publicação não pode ser futuro.")
+                    .WithMetadata("Campo", nameof(dto.AnoPublicacao))
             );
         }
 
@@ -35,6 +51,8 @@ public class ServicoRevista
             caixaSelecionada,
             dto.Status
         );
+
+        repositorioRevista.Cadastrar(revista);
 
         return Result.Ok();
     }

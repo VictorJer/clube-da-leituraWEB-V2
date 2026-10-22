@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao.Extensions;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
@@ -58,29 +59,20 @@ public class RevistaController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarRevistaViewModel viewModel)
     {
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
-
-        if (caixa == null)
-            ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
-
-        if (viewModel.AnoPublicacao > DateTime.Now)
-            ModelState.AddModelError(nameof(viewModel.AnoPublicacao), "");
-
-        if (caixa != null)
-        {
-            Revista revista = new(
-                viewModel.Titulo,
-                viewModel.NumeroEdicao,
-                viewModel.AnoPublicacao,
-                caixa,
-                viewModel.Status);
-
-            if (ModelState.IsValid)
-                repositorioRevista.Cadastrar(revista);
-        }
-
         if (!ModelState.IsValid)
         {
+            PrepararCaixas();
+            return View(viewModel);
+        }
+
+        CadastrarRevistaDto revistaDto = mapper.Map<CadastrarRevistaDto>(viewModel);
+
+        var result = servicoRevista.Cadastrar(revistaDto);
+
+        if (result.IsFailed)
+        {
+            ModelState.AddModelError(result);
+
             PrepararCaixas();
             return View(viewModel);
         }
