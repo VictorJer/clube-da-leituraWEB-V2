@@ -59,6 +59,7 @@ public class RevistaController : Controller
     public ActionResult Cadastrar(CadastrarRevistaViewModel viewModel)
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(viewModel.CaixaId);
+
         if (caixa == null)
             ModelState.AddModelError(nameof(viewModel.CaixaId), "Selecione uma caixa cadastrada.");
 
@@ -74,7 +75,6 @@ public class RevistaController : Controller
                 caixa,
                 viewModel.Status);
 
-            AdicionarErrosDeDominio(revista);
             if (ModelState.IsValid)
                 repositorioRevista.Cadastrar(revista);
         }
@@ -138,7 +138,6 @@ public class RevistaController : Controller
                 caixa,
                 viewModel.Status);
 
-            AdicionarErrosDeDominio(revistaAtualizada);
             if (ModelState.IsValid)
                 repositorioRevista.Editar(viewModel.Id, revistaAtualizada);
         }
@@ -187,12 +186,6 @@ public class RevistaController : Controller
         repositorioRevista.Excluir(revista.Id);
 
         return RedirectToAction(nameof(Listar));
-    }
-
-    private void AdicionarErrosDeDominio(Revista revista)
-    {
-        foreach (string erro in revista.Validar())
-            ModelState.AddModelError(string.Empty, erro);
     }
 
     private void PrepararCaixas()
