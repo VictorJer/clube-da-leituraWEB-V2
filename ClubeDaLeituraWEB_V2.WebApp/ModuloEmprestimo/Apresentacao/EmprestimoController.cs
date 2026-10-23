@@ -1,7 +1,7 @@
 using System.Globalization;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao.Extensions;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -9,42 +9,32 @@ namespace ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Apresentacao;
 
 public class EmprestimoController : Controller
 {
-    private readonly IRepositorioEmprestimo repositorioEmprestimo;
-    private readonly IRepositorioAmigo repositorioAmigo;
-    private readonly IRepositorioRevista repositorioRevista;
+    private readonly ServicoEmprestimo servicoEmprestimo;
 
-    public EmprestimoController(
-        IRepositorioEmprestimo repositorioEmprestimo,
-        IRepositorioAmigo repositorioAmigo,
-        IRepositorioRevista repositorioRevista)
+    public EmprestimoController(ServicoEmprestimo servicoEmprestimo)
     {
-        this.repositorioEmprestimo = repositorioEmprestimo;
-        this.repositorioAmigo = repositorioAmigo;
-        this.repositorioRevista = repositorioRevista;
+        this.servicoEmprestimo = servicoEmprestimo;
     }
 
     [HttpGet]
     public ActionResult Listar(string? amigoId)
     {
-        Amigo? amigoSelecionado = string.IsNullOrWhiteSpace(amigoId)
-            ? null
-            : repositorioAmigo.SelecionarPorId(amigoId);
+        var resultado = servicoEmprestimo.SelecionarTodos(amigoId);
 
-        if (!string.IsNullOrWhiteSpace(amigoId) && amigoSelecionado == null)
+        if (resultado.IsFailed)
         {
-            TempData["Aviso"] = "O amigo selecionado não foi encontrado.";
+            TempData["Aviso"] = resultado.Errors.First().Message;
             return RedirectToAction(nameof(Listar));
         }
 
-        List<EmprestimoListarItemViewModel> emprestimos = repositorioEmprestimo.SelecionarTodos()
-            .Where(emprestimo => amigoSelecionado == null || emprestimo.Amigo?.Id == amigoSelecionado.Id)
-            .OrderByDescending(emprestimo => emprestimo.DataEmprestimo)
+        ListarEmprestimosDto dto = resultado.Value;
+        List<EmprestimoListarItemViewModel> emprestimos = dto.Emprestimos
             .Select(emprestimo => new EmprestimoListarItemViewModel(
                 emprestimo.Id,
-                emprestimo.Amigo?.Id ?? string.Empty,
-                emprestimo.Amigo?.Nome ?? "Amigo não encontrado",
-                emprestimo.Revista?.Titulo ?? "Revista não encontrada",
-                emprestimo.Revista?.NumeroEdicao ?? 0,
+                emprestimo.AmigoId,
+                emprestimo.Amigo,
+                emprestimo.Revista,
+                emprestimo.NumeroEdicao,
                 emprestimo.DataEmprestimo,
                 emprestimo.DataDevolucaoPrevista,
                 emprestimo.DataDevolucao,
@@ -52,7 +42,7 @@ public class EmprestimoController : Controller
                 emprestimo.Status))
             .ToList();
 
-        return View(new ListarEmprestimosViewModel(amigoSelecionado?.Id, amigoSelecionado?.Nome, emprestimos));
+        return View(new ListarEmprestimosViewModel(dto.AmigoId, dto.NomeAmigo, emprestimos));
     }
 
     [HttpGet]
@@ -66,33 +56,17 @@ public class EmprestimoController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult Cadastrar(CadastrarEmprestimoViewModel viewModel)
     {
-        Amigo? amigo = repositorioAmigo.SelecionarPorId(viewModel.AmigoId);
-        Revista? revista = repositorioRevista.SelecionarPorId(viewModel.RevistaId);
-
-        if (amigo == null)
-            ModelState.AddModelError(nameof(viewModel.AmigoId), "Selecione um amigo cadastrado.");
-
-        if (revista == null)
-            ModelState.AddModelError(nameof(viewModel.RevistaId), "Selecione uma revista cadastrada.");
-
-        if (amigo != null && repositorioEmprestimo.Filtrar(emprestimo =>
-                emprestimo.Amigo?.Id == amigo.Id && !emprestimo.DataDevolucao.HasValue).Count > 0)
-            ModelState.AddModelError(string.Empty, "Este amigo já possui um empréstimo em aberto.");
-
-        if (revista != null && revista.Status != StatusRevista.Disponivel)
-            ModelState.AddModelError(string.Empty, "A revista selecionada não está disponível para empréstimo.");
-
-        if (amigo != null && revista != null)
+        if (ModelState.IsValid)
         {
-            Emprestimo emprestimo = new(amigo, revista, DateTime.Today);
-            AdicionarErrosDeDominio(emprestimo);
+            var resultado = servicoEmprestimo.Cadastrar(
+                new CadastrarEmprestimoDto(viewModel.AmigoId, viewModel.RevistaId));
 
-            if (ModelState.IsValid)
+            if (resultado.IsSuccess)
             {
-                revista.Status = StatusRevista.Emprestada;
-                repositorioEmprestimo.Cadastrar(emprestimo);
                 return RedirectToAction(nameof(Listar));
             }
+
+            ModelState.AddModelError(resultado);
         }
 
         PrepararOpcoes();
@@ -103,54 +77,29 @@ public class EmprestimoController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult RegistrarDevolucao(string id)
     {
-        Emprestimo? emprestimo = repositorioEmprestimo.SelecionarPorId(id);
-        if (emprestimo == null)
+        var resultado = servicoEmprestimo.RegistrarDevolucao(id);
+        if (resultado.IsFailed)
         {
-            TempData["Aviso"] = "O empréstimo selecionado não foi encontrado.";
+            TempData["Aviso"] = resultado.Errors.First().Message;
             return RedirectToAction(nameof(Listar));
         }
 
-        if (emprestimo.DataDevolucao.HasValue)
-        {
-            TempData["Aviso"] = "Este empréstimo já foi concluído.";
-            return RedirectToAction(nameof(Listar), new { amigoId = emprestimo.Amigo?.Id });
-        }
-
-        emprestimo.DataDevolucao = DateTime.Today;
-        if (emprestimo.Revista != null)
-            emprestimo.Revista.Status = StatusRevista.Disponivel;
-
-        repositorioEmprestimo.Editar(emprestimo.Id, emprestimo);
-        TempData["Sucesso"] = emprestimo.Multa > 0
-            ? $"Devolução registrada. Multa por atraso: {emprestimo.Multa.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))}."
+        DevolucaoEmprestimoDto devolucao = resultado.Value;
+        TempData["Sucesso"] = devolucao.Multa > 0
+            ? $"Devolução registrada. Multa por atraso: {devolucao.Multa.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))}."
             : "Devolução registrada sem multa.";
-        return RedirectToAction(nameof(Listar), new { amigoId = emprestimo.Amigo?.Id });
-    }
 
-    private void AdicionarErrosDeDominio(Emprestimo emprestimo)
-    {
-        foreach (string erro in emprestimo.Validar())
-            ModelState.AddModelError(string.Empty, erro);
+        return RedirectToAction(nameof(Listar), new { amigoId = devolucao.AmigoId });
     }
 
     private void PrepararOpcoes()
     {
-        HashSet<string> amigosComEmprestimoAberto = repositorioEmprestimo.SelecionarTodos()
-            .Where(emprestimo => !emprestimo.DataDevolucao.HasValue && emprestimo.Amigo != null)
-            .Select(emprestimo => emprestimo.Amigo!.Id)
-            .ToHashSet();
-
-        ViewBag.Amigos = repositorioAmigo.SelecionarTodos()
-            .Where(amigo => !amigosComEmprestimoAberto.Contains(amigo.Id))
-            .OrderBy(amigo => amigo.Nome)
-            .Select(amigo => new SelectListItem(amigo.Nome, amigo.Id))
+        OpcoesEmprestimoDto opcoes = servicoEmprestimo.SelecionarOpcoes();
+        ViewBag.Amigos = opcoes.Amigos
+            .Select(amigo => new SelectListItem(amigo.Texto, amigo.Id))
             .ToList();
-
-        ViewBag.Revistas = repositorioRevista.SelecionarTodos()
-            .Where(revista => revista.Status == StatusRevista.Disponivel)
-            .OrderBy(revista => revista.Titulo)
-            .ThenBy(revista => revista.NumeroEdicao)
-            .Select(revista => new SelectListItem($"{revista.Titulo} — edição {revista.NumeroEdicao}", revista.Id))
+        ViewBag.Revistas = opcoes.Revistas
+            .Select(revista => new SelectListItem(revista.Texto, revista.Id))
             .ToList();
     }
 }

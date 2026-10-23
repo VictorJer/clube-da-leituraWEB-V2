@@ -1,4 +1,5 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
 
 namespace ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Aplicacao;
@@ -9,5 +10,6 @@ public static class InjecaoDependenciaServico
     {
         services.AddScoped<ServicoCaixa>();
         services.AddScoped<ServicoRevista>();
+        services.AddScoped<ServicoEmprestimo>();
     }
 }
