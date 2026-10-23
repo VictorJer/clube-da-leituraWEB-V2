@@ -120,6 +120,23 @@ public class ServicoRevista
             );
     }
 
+    public Result<DetalhesRevistaDto> SelecionarPorId(string id)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(id);
+
+        if (revista == null)
+            return Result.Fail("Revista não encontrada.");               
+        
+        return new DetalhesRevistaDto(
+            id,
+            revista.Titulo,
+            revista.NumeroEdicao,
+            revista.AnoPublicacao,
+            revista.Caixa.Id,
+            revista.Status
+        );
+    }
+
     public List<ListarRevistasDto> SelecionarTodos()
     {
         List<Revista> revistas = repositorioRevista.SelecionarTodos();

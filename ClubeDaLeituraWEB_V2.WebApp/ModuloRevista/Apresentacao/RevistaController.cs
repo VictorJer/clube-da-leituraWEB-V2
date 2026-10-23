@@ -4,6 +4,7 @@ using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -83,18 +84,17 @@ public class RevistaController : Controller
     [HttpGet]
     public ActionResult Editar(string id)
     {
-        Revista? revista = repositorioRevista.SelecionarPorId(id);
-        if (revista == null)
-            return RedirectToAction(nameof(Listar));
+        Result<DetalhesRevistaDto> result = servicoRevista.SelecionarPorId(id);
 
+        if (result.IsFailed)
+        {
+            TempData.AddErrorMessagem(result);
+
+            return RedirectToAction(nameof(Listar));
+        }
+
+       EditarRevistaViewModel viewModel = mapper.Map<EditarRevistaViewModel>(result.Value);
         PrepararCaixas();
-        EditarRevistaViewModel viewModel = new(
-            revista.Id,
-            revista.Titulo,
-            revista.NumeroEdicao,
-            revista.AnoPublicacao,
-            revista.Caixa?.Id ?? string.Empty,
-            revista.Status);
 
         return View(viewModel);
     }

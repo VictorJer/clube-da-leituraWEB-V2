@@ -10,5 +10,6 @@ public class RevistaProfile : Profile
         CreateMap<ListarRevistasDto, ListarRevistasViewModel>();
         CreateMap<CadastrarRevistaViewModel, CadastrarRevistaDto>();
         CreateMap<EditarRevistaViewModel, EditarRevistaDto>();
+        CreateMap<DetalhesRevistaDto, EditarRevistaViewModel>();
     }
 }
