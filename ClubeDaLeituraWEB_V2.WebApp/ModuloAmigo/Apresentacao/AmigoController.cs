@@ -56,7 +56,7 @@ public class AmigoController : Controller
     }
 
     [HttpGet]
-    public ActionResult Editar(string id)
+    public ActionResult Editar(Guid id)
     {
         Result<DetalhesAmigoDto> resultado = servicoAmigo.SelecionarPorId(id);
         if (resultado.IsFailed)
@@ -98,7 +98,7 @@ public class AmigoController : Controller
     }
 
     [HttpGet]
-    public ActionResult Excluir(string id)
+    public ActionResult Excluir(Guid id)
     {
         Result<DetalhesAmigoDto> resultado = servicoAmigo.SelecionarParaExclusao(id);
         if (resultado.IsFailed)

@@ -21,13 +21,13 @@ public class ServicoEmprestimo
         this.repositorioRevista = repositorioRevista;
     }
 
-    public Result<ListarEmprestimosDto> SelecionarTodos(string? amigoId)
+    public Result<ListarEmprestimosDto> SelecionarTodos(Guid? amigoId)
     {
-        Amigo? amigoSelecionado = string.IsNullOrWhiteSpace(amigoId)
-            ? null
-            : repositorioAmigo.SelecionarPorId(amigoId);
+        Amigo? amigoSelecionado = amigoId.HasValue
+            ? repositorioAmigo.SelecionarPorId(amigoId.Value)
+            : null;
 
-        if (!string.IsNullOrWhiteSpace(amigoId) && amigoSelecionado == null)
+        if (amigoId.HasValue && amigoSelecionado == null)
             return Result.Fail("O amigo selecionado não foi encontrado.");
 
         List<EmprestimoListarDto> emprestimos = repositorioEmprestimo.SelecionarTodos()
@@ -35,7 +35,7 @@ public class ServicoEmprestimo
             .OrderByDescending(emprestimo => emprestimo.DataEmprestimo)
             .Select(emprestimo => new EmprestimoListarDto(
                 emprestimo.Id,
-                emprestimo.Amigo?.Id ?? string.Empty,
+                emprestimo.Amigo?.Id,
                 emprestimo.Amigo?.Nome ?? "Amigo não encontrado",
                 emprestimo.Revista?.Titulo ?? "Revista não encontrada",
                 emprestimo.Revista?.NumeroEdicao ?? 0,
@@ -51,7 +51,7 @@ public class ServicoEmprestimo
 
     public OpcoesEmprestimoDto SelecionarOpcoes()
     {
-        HashSet<string> amigosComEmprestimoAberto = repositorioEmprestimo.SelecionarTodos()
+        HashSet<Guid> amigosComEmprestimoAberto = repositorioEmprestimo.SelecionarTodos()
             .Where(emprestimo => !emprestimo.DataDevolucao.HasValue && emprestimo.Amigo != null)
             .Select(emprestimo => emprestimo.Amigo!.Id)
             .ToHashSet();
@@ -110,7 +110,7 @@ public class ServicoEmprestimo
         return Result.Ok();
     }
 
-    public Result<DevolucaoEmprestimoDto> RegistrarDevolucao(string id)
+    public Result<DevolucaoEmprestimoDto> RegistrarDevolucao(Guid id)
     {
         Emprestimo? emprestimo = repositorioEmprestimo.SelecionarPorId(id);
         if (emprestimo == null)

@@ -1,7 +1,7 @@
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Aplicacao;
 
 public record ListarAmigosDto(
-    string Id,
+    Guid Id,
     string Nome,
     string NomeResponsavel,
     string Telefone
@@ -14,14 +14,14 @@ public record CadastrarAmigoDto(
 );
 
 public record EditarAmigoDto(
-    string Id,
+    Guid Id,
     string Nome,
     string NomeResponsavel,
     string Telefone
 );
 
 public record DetalhesAmigoDto(
-    string Id,
+    Guid Id,
     string Nome,
     string NomeResponsavel,
     string Telefone

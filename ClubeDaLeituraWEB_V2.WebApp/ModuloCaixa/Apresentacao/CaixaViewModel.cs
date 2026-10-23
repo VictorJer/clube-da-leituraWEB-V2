@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Apresentacao;
 
 public record ListarCaixasViewModel(
-    string Id,
+    Guid Id,
     string Etiqueta,
     string Cor,
     int DiasDeEmprestimo
@@ -22,7 +22,7 @@ public record CadastrarCaixaViewModel(
 );
 
 public record EditarCaixaViewModel(
-    string Id,
+    Guid Id,
 
     [Required(ErrorMessage = "O campo \"Etiqueta\" deve ser preenchido.")]
     [StringLength(50, ErrorMessage = "O campo \"Etiqueta\" deve conter no máximo 50 caracteres.")]
@@ -36,7 +36,7 @@ public record EditarCaixaViewModel(
 );
 
 public record ExcluirCaixaViewModel(
-    string Id,
+    Guid Id,
     string Etiqueta,
     string Cor,
     int DiasDeEmprestimo

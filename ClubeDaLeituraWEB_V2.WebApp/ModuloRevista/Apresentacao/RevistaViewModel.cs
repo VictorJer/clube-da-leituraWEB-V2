@@ -4,7 +4,7 @@ using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Apresentacao;
 
 public record ListarRevistasViewModel(
-    string Id,
+    Guid Id,
     string Titulo,
     int NumeroEdicao,
     DateTime AnoPublicacao,
@@ -25,14 +25,14 @@ public record CadastrarRevistaViewModel(
     DateTime AnoPublicacao,
 
     [Required(ErrorMessage = "Selecione uma caixa.")]
-    string CaixaId,
+    Guid CaixaId,
 
     StatusRevista Status
 );
 
 public record EditarRevistaViewModel(
     [Required]
-    string Id,
+    Guid Id,
 
     [Required(ErrorMessage = "O título deve ser preenchido.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "O título deve conter entre 2 e 100 caracteres.")]
@@ -46,13 +46,13 @@ public record EditarRevistaViewModel(
     DateTime AnoPublicacao,
 
     [Required(ErrorMessage = "Selecione uma caixa.")]
-    string CaixaId,
+    Guid CaixaId,
 
     StatusRevista Status
 );
 
 public record ExcluirRevistaViewModel(
-    string Id,
+    Guid Id,
     string Titulo,
     int NumeroEdicao,
     DateTime AnoPublicacao,

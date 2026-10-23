@@ -1,7 +1,7 @@
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 
 public record ListarCaixasDto(
-    string Id,
+    Guid Id,
     string Etiqueta,
     string Cor,
     int DiasDeEmprestimo
@@ -14,14 +14,14 @@ public record CadastrarCaixaDto(
 );
 
 public record EditarCaixaDto(
-    string Id,
+    Guid Id,
     string Etiqueta,
     string Cor,
     int DiasDeEmprestimo
 );
 
 public record DetalhesCaixaDto(
-    string Id,
+    Guid Id,
     string Etiqueta,
     string Cor,
     int DiasDeEmprestimo

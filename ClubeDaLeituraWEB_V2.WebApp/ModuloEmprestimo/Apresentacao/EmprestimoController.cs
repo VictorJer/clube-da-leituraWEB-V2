@@ -17,8 +17,14 @@ public class EmprestimoController : Controller
     }
 
     [HttpGet]
-    public ActionResult Listar(string? amigoId)
+    public ActionResult Listar(Guid? amigoId)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Aviso"] = "O identificador do amigo informado é inválido.";
+            return RedirectToAction(nameof(Listar));
+        }
+
         var resultado = servicoEmprestimo.SelecionarTodos(amigoId);
 
         if (resultado.IsFailed)
@@ -49,7 +55,7 @@ public class EmprestimoController : Controller
     public ActionResult Cadastrar()
     {
         PrepararOpcoes();
-        return View(new CadastrarEmprestimoViewModel(string.Empty, string.Empty));
+        return View(new CadastrarEmprestimoViewModel(Guid.Empty, Guid.Empty));
     }
 
     [HttpPost]
@@ -75,7 +81,7 @@ public class EmprestimoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult RegistrarDevolucao(string id)
+    public ActionResult RegistrarDevolucao(Guid id)
     {
         var resultado = servicoEmprestimo.RegistrarDevolucao(id);
         if (resultado.IsFailed)
@@ -96,10 +102,10 @@ public class EmprestimoController : Controller
     {
         OpcoesEmprestimoDto opcoes = servicoEmprestimo.SelecionarOpcoes();
         ViewBag.Amigos = opcoes.Amigos
-            .Select(amigo => new SelectListItem(amigo.Texto, amigo.Id))
+            .Select(amigo => new SelectListItem(amigo.Texto, amigo.Id.ToString()))
             .ToList();
         ViewBag.Revistas = opcoes.Revistas
-            .Select(revista => new SelectListItem(revista.Texto, revista.Id))
+            .Select(revista => new SelectListItem(revista.Texto, revista.Id.ToString()))
             .ToList();
     }
 }

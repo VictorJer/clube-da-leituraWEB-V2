@@ -4,8 +4,8 @@ using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Apresentacao;
 
 public record EmprestimoListarItemViewModel(
-    string Id,
-    string AmigoId,
+    Guid Id,
+    Guid? AmigoId,
     string Amigo,
     string Revista,
     int NumeroEdicao,
@@ -17,15 +17,15 @@ public record EmprestimoListarItemViewModel(
 );
 
 public record ListarEmprestimosViewModel(
-    string? AmigoId,
+    Guid? AmigoId,
     string? NomeAmigo,
     List<EmprestimoListarItemViewModel> Emprestimos
 );
 
 public record CadastrarEmprestimoViewModel(
     [Required(ErrorMessage = "Selecione um amigo.")]
-    string AmigoId,
+    Guid AmigoId,
 
     [Required(ErrorMessage = "Selecione uma revista.")]
-    string RevistaId
+    Guid RevistaId
 );

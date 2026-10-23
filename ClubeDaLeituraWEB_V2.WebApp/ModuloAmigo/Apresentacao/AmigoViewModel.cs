@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Apresentacao;
 
 public record ListarAmigosViewModel(
-    string Id,
+    Guid Id,
     string Nome,
     string NomeResponsavel,
     string Telefone
@@ -24,7 +24,7 @@ public record CadastrarAmigoViewModel(
 );
 
 public record EditarAmigoViewModel(
-    string Id,
+    Guid Id,
 
     [Required(ErrorMessage = "O nome do amigo deve ser preenchido.")]
     [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome do amigo deve conter entre 3 e 100 caracteres.")]
@@ -40,7 +40,7 @@ public record EditarAmigoViewModel(
 );
 
 public record ExcluirAmigoViewModel(
-    string Id,
+    Guid Id,
     string Nome,
     string NomeResponsavel,
     string Telefone

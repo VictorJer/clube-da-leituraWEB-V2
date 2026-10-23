@@ -28,7 +28,7 @@ public class ServicoAmigo
             .ToList();
     }
 
-    public Result<DetalhesAmigoDto> SelecionarPorId(string id)
+    public Result<DetalhesAmigoDto> SelecionarPorId(Guid id)
     {
         Amigo? amigo = repositorioAmigo.SelecionarPorId(id);
         if (amigo == null)
@@ -74,7 +74,7 @@ public class ServicoAmigo
         return Result.Ok();
     }
 
-    public Result<DetalhesAmigoDto> SelecionarParaExclusao(string id)
+    public Result<DetalhesAmigoDto> SelecionarParaExclusao(Guid id)
     {
         Result<Amigo> resultado = BuscarAmigoExcluivel(id);
         if (resultado.IsFailed)
@@ -88,7 +88,7 @@ public class ServicoAmigo
             amigo.Telefone));
     }
 
-    public Result Excluir(string id)
+    public Result Excluir(Guid id)
     {
         Result<Amigo> resultado = BuscarAmigoExcluivel(id);
         if (resultado.IsFailed)
@@ -100,7 +100,7 @@ public class ServicoAmigo
         return Result.Ok();
     }
 
-    private Result<Amigo> BuscarAmigoExcluivel(string id)
+    private Result<Amigo> BuscarAmigoExcluivel(Guid id)
     {
         Amigo? amigo = repositorioAmigo.SelecionarPorId(id);
         if (amigo == null)
@@ -115,7 +115,7 @@ public class ServicoAmigo
         return Result.Ok(amigo);
     }
 
-    private bool ExisteAmigoComMesmoNomeETelefone(Amigo amigo, string? idIgnorado = null)
+    private bool ExisteAmigoComMesmoNomeETelefone(Amigo amigo, Guid? idIgnorado = null)
     {
         string telefoneNormalizado = Amigo.NormalizarTelefone(amigo.Telefone);
 

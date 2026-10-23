@@ -50,7 +50,7 @@ public class ServicoCaixa
         return Result.Ok();
     }
 
-    public Result Excluir(string id)
+    public Result Excluir(Guid id)
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
 
@@ -79,7 +79,7 @@ public class ServicoCaixa
         return caixas.Select(c => new ListarCaixasDto(c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo)).ToList();
     }
 
-    public Result<DetalhesCaixaDto> SelecionarPorId(string id)
+    public Result<DetalhesCaixaDto> SelecionarPorId(Guid id)
     {
         Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
 
@@ -89,7 +89,7 @@ public class ServicoCaixa
         return Result.Ok(new DetalhesCaixaDto(caixa.Id, caixa.Etiqueta, caixa.Cor, caixa.DiasDeEmprestimo));
     }
 
-    private bool ExiteCaixaComEtiqueta(string etiqueta, string? idnull = null)
+    private bool ExiteCaixaComEtiqueta(string etiqueta, Guid? idnull = null)
     {
         List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
 

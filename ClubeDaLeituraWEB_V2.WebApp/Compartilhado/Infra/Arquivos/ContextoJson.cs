@@ -30,10 +30,8 @@ public sealed class ContextoJson
 
     public void Salvar()
     {
-        JsonSerializerOptions opcoesJson = new JsonSerializerOptions();
+        JsonSerializerOptions opcoesJson = CriarOpcoesJson();
         opcoesJson.WriteIndented = true;
-        opcoesJson.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        opcoesJson.ReferenceHandler = ReferenceHandler.Preserve;
 
         string jsonString = JsonSerializer.Serialize(this, opcoesJson);
 
@@ -47,9 +45,7 @@ public sealed class ContextoJson
 
         string jsonString = File.ReadAllText(caminhoArquivo);
 
-        JsonSerializerOptions opcoesJson = new JsonSerializerOptions();
-        opcoesJson.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        opcoesJson.ReferenceHandler = ReferenceHandler.Preserve;
+        JsonSerializerOptions opcoesJson = CriarOpcoesJson();
 
         ContextoJson? contextoSalvo = JsonSerializer
             .Deserialize<ContextoJson>(jsonString, opcoesJson);
@@ -61,5 +57,37 @@ public sealed class ContextoJson
         Caixas = contextoSalvo.Caixas ?? new List<Caixa>();
         Revistas = contextoSalvo.Revistas ?? new List<Revista>();
         Emprestimos = contextoSalvo.Emprestimos ?? new List<Emprestimo>();
+    }
+
+    private static JsonSerializerOptions CriarOpcoesJson()
+    {
+        JsonSerializerOptions opcoesJson = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.Preserve
+        };
+        opcoesJson.Converters.Add(new IdGuidJsonConverter());
+
+        return opcoesJson;
+    }
+
+    private sealed class IdGuidJsonConverter : JsonConverter<Guid>
+    {
+        public override Guid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            string? valor = reader.GetString();
+            if (Guid.TryParse(valor, out Guid id))
+                return id;
+
+            if (valor is { Length: 7 } && valor.All(Uri.IsHexDigit))
+                return Guid.ParseExact(valor.PadLeft(32, '0'), "N");
+
+            throw new JsonException("O identificador salvo não possui um formato de GUID válido.");
+        }
+
+        public override void Write(Utf8JsonWriter writer, Guid value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value);
+        }
     }
 }

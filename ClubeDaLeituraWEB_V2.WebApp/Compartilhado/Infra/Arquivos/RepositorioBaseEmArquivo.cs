@@ -22,7 +22,7 @@ public abstract class RepositorioBaseEmArquivo<T> where T : EntidadeBase<T>
         contexto.Salvar();
     }
 
-    public bool Editar(string idSelecionado, T entidadeAtualizada)
+    public bool Editar(Guid idSelecionado, T entidadeAtualizada)
     {
         T? registroSelecionado = SelecionarPorId(idSelecionado);
 
@@ -46,7 +46,7 @@ public abstract class RepositorioBaseEmArquivo<T> where T : EntidadeBase<T>
         return conseguiuExcluir;
     }
 
-    public bool Excluir(string idSelecionado)
+    public bool Excluir(Guid idSelecionado)
     {
         T? registroSelecionado = SelecionarPorId(idSelecionado);
 
@@ -56,7 +56,7 @@ public abstract class RepositorioBaseEmArquivo<T> where T : EntidadeBase<T>
         return Excluir(registroSelecionado);
     }
 
-    public T? SelecionarPorId(string idSelecionado)
+    public T? SelecionarPorId(Guid idSelecionado)
     {
         foreach (T registro in registros)
         {

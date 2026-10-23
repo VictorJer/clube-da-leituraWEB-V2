@@ -43,7 +43,7 @@ public class RevistaController : Controller
             string.Empty,
             1,
             DateTime.Today,
-            string.Empty,
+            Guid.Empty,
             StatusRevista.Disponivel);
 
         return View(viewModel);
@@ -75,7 +75,7 @@ public class RevistaController : Controller
     }
 
     [HttpGet]
-    public ActionResult Editar(string id)
+    public ActionResult Editar(Guid id)
     {
         Result<DetalhesRevistaDto> result = servicoRevista.SelecionarPorId(id);
 
@@ -116,7 +116,7 @@ public class RevistaController : Controller
     }
 
     [HttpGet]
-    public ActionResult Excluir(string id)
+    public ActionResult Excluir(Guid id)
     {
         Result<DetalhesRevistaDto> result = servicoRevista.SelecionarPorId(id);
 
@@ -148,7 +148,7 @@ public class RevistaController : Controller
     {
         ViewBag.Caixas = servicoCaixa.SelecionarTodos()
             .OrderBy(caixa => caixa.Etiqueta)
-            .Select(caixa => new SelectListItem(caixa.Etiqueta, caixa.Id))
+            .Select(caixa => new SelectListItem(caixa.Etiqueta, caixa.Id.ToString()))
             .ToList();
     }
 

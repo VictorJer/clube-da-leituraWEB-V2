@@ -61,7 +61,7 @@ public class CaixaController : Controller
     }
 
     [HttpGet]
-    public ActionResult Editar(string id)
+    public ActionResult Editar(Guid id)
     {
         Result<DetalhesCaixaDto> result = servicoCaixa.SelecionarPorId(id);
 
@@ -101,7 +101,7 @@ public class CaixaController : Controller
     }
 
     [HttpGet]
-    public ActionResult Excluir(string id)
+    public ActionResult Excluir(Guid id)
     {
         Result<DetalhesCaixaDto> result = servicoCaixa.SelecionarPorId(id);
 

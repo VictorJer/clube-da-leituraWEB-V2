@@ -110,7 +110,7 @@ public class ServicoRevista
         return Result.Ok();
     }
 
-    public Result Excluir(string id)
+    public Result Excluir(Guid id)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(id);
 
@@ -128,7 +128,7 @@ public class ServicoRevista
         return Result.Ok();
     }
 
-    private bool ExisteRevistaComMesmoTituloEEdicao(string titulo, int numeroEdicao, string? idIgnorado = null)
+    private bool ExisteRevistaComMesmoTituloEEdicao(string titulo, int numeroEdicao, Guid? idIgnorado = null)
     {
         List<Revista> revistas = repositorioRevista.SelecionarTodos();
 
@@ -139,7 +139,7 @@ public class ServicoRevista
             );
     }
 
-    public Result<DetalhesRevistaDto> SelecionarPorId(string id)
+    public Result<DetalhesRevistaDto> SelecionarPorId(Guid id)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(id);
 
