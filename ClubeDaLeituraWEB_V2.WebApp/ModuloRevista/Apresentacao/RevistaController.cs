@@ -1,6 +1,6 @@
 using AutoMapper;
 using ClubeDaLeituraWEB_V2.WebApp.Compartilhado.Apresentacao.Extensions;
-using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using FluentResults;
@@ -11,16 +11,16 @@ namespace ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Apresentacao;
 
 public class RevistaController : Controller
 {
-    private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly ServicoCaixa servicoCaixa;
     private readonly IMapper mapper;
     private readonly ServicoRevista servicoRevista;
 
     public RevistaController(
-        IRepositorioCaixa repositorioCaixa,
+        ServicoCaixa servicoCaixa,
         IMapper mapper,
         ServicoRevista servicoRevista)
     {
-        this.repositorioCaixa = repositorioCaixa;
+        this.servicoCaixa = servicoCaixa;
         this.mapper = mapper;
         this.servicoRevista = servicoRevista;
     }
@@ -146,7 +146,7 @@ public class RevistaController : Controller
 
     private void PrepararCaixas()
     {
-        ViewBag.Caixas = repositorioCaixa.SelecionarTodos()
+        ViewBag.Caixas = servicoCaixa.SelecionarTodos()
             .OrderBy(caixa => caixa.Etiqueta)
             .Select(caixa => new SelectListItem(caixa.Etiqueta, caixa.Id))
             .ToList();
