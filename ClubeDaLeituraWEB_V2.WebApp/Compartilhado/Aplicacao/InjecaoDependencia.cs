@@ -1,3 +1,4 @@
+using ClubeDaLeituraWEB_V2.WebApp.ModuloAmigo.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Aplicacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Aplicacao;
@@ -8,6 +9,7 @@ public static class InjecaoDependenciaServico
 {
     public static void AdicionarCamadaServico(this IServiceCollection services)
     {
+        services.AddScoped<ServicoAmigo>();
         services.AddScoped<ServicoCaixa>();
         services.AddScoped<ServicoRevista>();
         services.AddScoped<ServicoEmprestimo>();
