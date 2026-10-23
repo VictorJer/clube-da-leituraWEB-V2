@@ -34,5 +34,6 @@ public record DetalhesRevistaDto(
     int NumeroEdicao,
     DateTime AnoPublicacao,
     string CaixaId,
+    string EtiquetaCaixa,
     StatusRevista Status
 );

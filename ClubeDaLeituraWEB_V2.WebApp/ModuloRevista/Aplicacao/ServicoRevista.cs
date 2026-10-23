@@ -1,5 +1,6 @@
 using ClubeDaLeituraWEB_V2.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloEmprestimo.Dominio;
+using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Apresentacao;
 using ClubeDaLeituraWEB_V2.WebApp.ModuloRevista.Dominio;
 using FluentResults;
 
@@ -109,6 +110,24 @@ public class ServicoRevista
         return Result.Ok();
     }
 
+    public Result Excluir(string id)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(id);
+
+        if (revista == null)
+            return Result.Fail("Revista não encontrada.");
+
+        bool possuiEmprestimos = repositorioEmprestimo.Filtrar(emprestimo =>
+            emprestimo.Revista?.Id == revista.Id).Count > 0;
+
+        if (possuiEmprestimos)
+            return Result.Fail("Esta revista não pode ser excluída porque possui empréstimos vinculados.");
+
+        repositorioRevista.Excluir(id);
+
+        return Result.Ok();
+    }
+
     private bool ExisteRevistaComMesmoTituloEEdicao(string titulo, int numeroEdicao, string? idIgnorado = null)
     {
         List<Revista> revistas = repositorioRevista.SelecionarTodos();
@@ -133,6 +152,7 @@ public class ServicoRevista
             revista.NumeroEdicao,
             revista.AnoPublicacao,
             revista.Caixa.Id,
+            revista.Caixa.Etiqueta,
             revista.Status
         );
     }

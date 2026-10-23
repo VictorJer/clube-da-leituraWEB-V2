@@ -11,5 +11,7 @@ public class RevistaProfile : Profile
         CreateMap<CadastrarRevistaViewModel, CadastrarRevistaDto>();
         CreateMap<EditarRevistaViewModel, EditarRevistaDto>();
         CreateMap<DetalhesRevistaDto, EditarRevistaViewModel>();
+        CreateMap<DetalhesRevistaDto, ExcluirRevistaViewModel>()
+            .ForCtorParam(nameof(ExcluirRevistaViewModel.Caixa), option => option.MapFrom(source => source.EtiquetaCaixa));
     }
 }
